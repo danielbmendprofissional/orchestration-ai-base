@@ -16,7 +16,7 @@ Projeto base para todo novo workflow assistido por IA — stack-agnóstico (nenh
 ## Em aberto (próximas frentes, em ordem)
 
 1. Instalar de verdade, na máquina real, a cadeia de design/frontend (skills do Angular, `ui-ux-pro-max-cli`, `impeccable`) — comandos em `docs/comandos-para-rodar.md`.
-2. Branches protegidas + esteira de deploy no GitLab (SaaS).
-3. Docker / Kubernetes + serviços de contexto (Redis, Postgres, RabbitMQ, Keycloak).
+2. Branches protegidas + esteira de deploy no GitLab (SaaS) — **não começar do zero**: existe um template real já bem avançado em `C:\Users\danib\source\repos\template-ci` (repo separado, ver `README.md` dele), com fluxo por tag (`vX.Y.Z`/`vX.Y.Z-rcN`), `dev → qa → hml → master`, validação de sequência/anti-contrabando de commit, aprovação manual por ambiente, SAST/Secret Detection nativos do GitLab, e smoke test pós-deploy. Esse repo tem uma pasta `tce/` que é trabalho de cliente real e fica **fora de qualquer coisa relacionada a este projeto** — só `personal/`/`docs/` de lá são genéricos e candidatos a virar a base deste item aqui.
+3. Docker / Kubernetes + serviços de contexto (Redis, Postgres, RabbitMQ, Keycloak) — quando chegar aqui, também revisitar `C:\Users\danib\source\repos\Security-Scanner` (repo separado: CLI .NET que orquestra Trivy/Opengrep/Checkov/BetterLeaks/ZAP via Docker e agrega achados no DefectDojo self-hosted). A integração dele com o `template-ci` do item 2 ficou combinada pra esse momento — decidir onde o DefectDojo roda faz parte dessa decisão de infra.
 
 Ver `docs/workflow.md` para como usar o que já está pronto e `docs/comandos-para-rodar.md` para o setup local ainda pendente (instalar pi.dev, Alethe, glab).
