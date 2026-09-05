@@ -19,8 +19,12 @@ commit (mensagens claras, um commit por unidade lógica)
         ↓
 merge request → dev (branch protegida) → validação humana (Daniel aprova)
         ↓
-esteira de deploy promove: dev → qa → hml → master
+[passo ainda não confirmado — ver docs/agents/esteira-deploy.md: quem cria a tag vX.Y.Z que dispara a promoção]
+        ↓
+esteira de deploy promove por tag: dev → qa → hml → master
 ```
+
+> A esteira de deploy (mecanismo, escopo de stack, modelo de promoção por tag) está decidida em conversa mas não implementada — ver `docs/agents/esteira-deploy.md` para o registro completo, incluindo o que ainda falta confirmar antes de montar o `.gitlab-ci.yml` de verdade.
 
 O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`master` diretamente; a promoção entre essas é responsabilidade da esteira (a configurar, item de infra do projeto), não de um push manual. Hotfix direto em `master` é uma rota futura, ainda não habilitada, e mesmo quando existir vai continuar exigindo aprovação de código humana prévia — não é bypass do processo, é uma variante dele.
 

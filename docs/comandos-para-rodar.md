@@ -120,7 +120,7 @@ Cada painel agora é uma sessão `pi` independente. Quando você tiver 4 specs p
 
 ---
 
-## 8. Skills oficiais do Angular (nesta pasta `ai-base`, valem pro template todo)
+## 8. Skills oficiais do Angular (nesta pasta `ai-base`, valem pro template todo) — ✅ executado em 2026-09-05, ver `docs/log-execucao.md`
 
 **Terminal: "PowerShell" (normal)**, dentro da pasta do repo:
 
