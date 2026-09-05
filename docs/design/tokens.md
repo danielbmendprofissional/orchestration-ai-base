@@ -4,7 +4,7 @@ Este arquivo é um **starter/seed**, não a resposta final. Desde a adoção da 
 
 Formato neutro (JSON), pra não prender a um framework — o mapeamento real acontece assim:
 
-- **Angular (default deste template)**: os valores viram o tema do **PrimeNG** (Design Tokens da API de Theming, `definePreset`) e/ou variáveis CSS (`:root { --p-primary-color: ... }`), nunca classe utilitária Tailwind — ver `component-library.md`.
+- **Angular (default deste template)**: os valores viram **os dois ao mesmo tempo, batendo entre si** — o tema do **PrimeNG** (Design Tokens da API de Theming, `definePreset`) pra componente, e o `tailwind.config` pra layout/espaçamento/utilitário (Tailwind é oficialmente suportado em Angular 20+) — ver `component-library.md`. Nunca mapear só um dos dois e deixar o outro no default de fábrica.
 - **React (landing page isolada)**: `tailwind.config` ou tema do shadcn/ui, como antes.
 
 O `ui` (`.pi/agents/ui.md`) deve sempre consumir tokens a partir do tema já mapeado (PrimeNG preset ou `DESIGN.md` do projeto), nunca inventar um valor de cor/espaçamento ad-hoc no meio de uma task.
@@ -108,5 +108,5 @@ Padrão: nenhum, a menos que a task de `ui` justifique. Se precisar, usar `anime
 ## Quando o projeto real nascer deste template
 
 1. Rode a cadeia de `principios.md`: `ui-ux-pro-max-skill` pra direção inicial, depois `/impeccable init` pra gerar o `DESIGN.md`/`PRODUCT.md` reais do projeto, usando os valores acima como seed consciente em vez de deixar a ferramenta partir do zero.
-2. Mapeie os valores pro preset de tema do PrimeNG (`definePreset`, `@primeng/themes`).
+2. Mapeie os valores pro preset de tema do PrimeNG (`definePreset`, `@primeng/themes`) **e** pro `tailwind.config` do projeto, com os mesmos números dos dois lados.
 3. Registre no `CONTEXT.md` do projeto que os tokens vivem no `DESIGN.md`/preset dali pra frente — este `tokens.md` do template deixa de ser a fonte de verdade assim que o projeto real tiver a sua própria.

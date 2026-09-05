@@ -164,6 +164,14 @@ E os comandos de correção conforme o `audit` indicar: `/impeccable adapt`, `/i
 npm install primeng @primeng/themes
 ```
 
+**Tailwind CSS** (default junto com o PrimeNG, pra layout/espaçamento/utilitário — Angular 20+ tem suporte oficial):
+
+```powershell
+ng add tailwindcss
+```
+
+Se o `ng add` não existir ainda na versão do CLI do projeto, o caminho manual é `npm install tailwindcss @tailwindcss/postcss postcss` seguido da configuração descrita em `angular.dev/guide/tailwind` — mas tenta o `ng add` primeiro.
+
 ## O que eu NÃO coloquei aqui
 
 `git push` continua proibido até você aprovar o que já foi commitado (`git log --oneline` mostra os commits locais). Nenhum comando desta lista dá push em nada.
