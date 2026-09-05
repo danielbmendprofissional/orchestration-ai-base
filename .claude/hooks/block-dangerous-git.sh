@@ -23,9 +23,14 @@ for pattern in "${DANGEROUS_PATTERNS[@]}"; do
   fi
 done
 
-# Push direto pra branch protegida (main/master) — o fluxo deste projeto é sempre feature branch -> MR -> validação humana.
-if echo "$COMMAND" | grep -qE "git push[^|&;]*\s(origin\s+)?(main|master)(\s|$)"; then
-  echo "BLOCKED: '$COMMAND' — push direto em branch protegida. Abra uma feature branch e uma merge request." >&2
+# Push direto pra qualquer branch protegida do fluxo de promoção
+# (feature-x -> MR -> dev -> qa -> hml -> master; main/master ficam como fallback
+# genérico pra repos que ainda não adotaram o fluxo completo). Hotfix direto em
+# master fica pra quando existir aprovação humana prévia configurada — não é
+# esse hook que vai decidir isso.
+PROTECTED_BRANCHES="main|master|dev|qa|hml"
+if echo "$COMMAND" | grep -qE "git push[^|&;]*\s(origin\s+)?($PROTECTED_BRANCHES)(\s|$)"; then
+  echo "BLOCKED: '$COMMAND' — push direto em branch protegida. Abra uma feature branch e uma merge request pra 'dev'." >&2
   exit 2
 fi
 

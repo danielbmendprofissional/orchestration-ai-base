@@ -11,9 +11,11 @@ Ver `docs/workflow.md` para o fluxo completo ponta a ponta, `docs/agents/orchest
 
 ## Agent skills
 
+Todas as skills em `.claude/skills/` têm `disable-model-invocation: true` — nenhuma dispara sozinha por descrição bater com o contexto. Só rodam quando chamadas explicitamente (`/grill-me`, "use a skill code-review", etc.). Isso é deliberado, pra não gastar token com skill que o agente decidiu invocar por conta própria.
+
 ### Issue tracker
 
-Issues e specs vivem no GitLab (`gitlab.com/personal.daniel.bmend/ai-base`), via `glab`. Ver `docs/agents/issue-tracker.md`.
+Issues e specs vivem no GitLab, via GitLab MCP — a configurar por projeto, já que cada projeto criado a partir deste template aponta pro seu próprio repositório GitLab (este `ai-base` não é o repo de trabalho de ninguém, é só o template). Ver `docs/agents/issue-tracker.md` para o estado atual (hoje documenta o fallback manual via `glab`; a integração via MCP fica pendente de configuração quando um projeto real for criado).
 
 ### Triage labels
 
@@ -25,6 +27,14 @@ Layout single-context: `CONTEXT.md` + `docs/adr/` na raiz. Ver `docs/agents/doma
 
 ## Convenções de repo
 
-- Branch protegida: `main` (configuração de proteção e pipeline em `.gitlab-ci.yml` — ver item de infra do projeto).
-- Nunca commitar direto em `main`: sempre feature branch → merge request → validação humana. **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via `git-guardrails-claude-code`): bloqueia `git push` direto pra `main`/`master`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal.
+Fluxo de branches (promoção via esteira de deploy, não é só uma branch protegida):
+
+```
+feature-x → MR → dev → qa → hml → master
+```
+
+- O agente sempre sobe o trabalho em `feature-x` e abre merge request pra `dev` — nunca commita direto em nenhuma das branches promovidas.
+- `dev`, `qa`, `hml` e `master` são todas protegidas; a promoção entre elas é feita pela esteira de deploy (a configurar — ver item de infra do projeto), não por push manual.
+- Futuro (ainda não habilitado): hotfix direto em `master`, mas sempre com aprovação prévia de código humana antes do merge — não é um bypass do processo, é uma rota de emergência com o mesmo gate de revisão.
+- **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via skill `git-guardrails-claude-code`): bloqueia `git push` direto em `main`/`master`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal.
 - Specs e tickets seguem `docs/workflow.md`.

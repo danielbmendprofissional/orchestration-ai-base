@@ -4,6 +4,8 @@ Camada de EXECUCAO deste projeto (item 4). Fica por dentro do passo `/implement`
 
 Nao existe um "agente pai" fixo além do proprio processo `pi` — cada CLI `pi` que voce abre (uma por spec) É o agente pai daquela spec, orquestrando os subagents abaixo dela via a tool `task`.
 
+Economia de tokens nesta camada: RTK ligado (se o `pi` tiver suporte — ver `pratices/tokens/caveman-rtk.md` seção 7), Caveman **nunca** — Caveman é exclusivo de sessões Claude Code (discovery/grill-me/review), nunca dos subagents de execução.
+
 ## O que ja esta pronto neste repo
 
 - `.pi/extensions/subagent/` — extensao oficial do pi.dev (vendorizada, ver o README dela pra saber o que foi alterado) que da ao `pi` a tool `task` (single / parallel / chain de subagents).
@@ -65,7 +67,7 @@ Depois que o subagent `review` (ultimo da chain) devolver `PASS`, é o proprio `
 git add -A && git commit -m "..." && git push origin feature/<spec>
 ```
 
-O hook `.claude/hooks/block-dangerous-git.sh` só vale pra sessoes de Claude Code, nao pro `pi` — ainda assim, a convencao do repo (branch de feature, nunca push direto em `main`) vale igual. Quando **todas** as specs de uma feature estiverem prontas, quem abre a merge request pra branch protegida e faz a revisao final é o fluxo de fora, com Claude Code (`/code-review`, depois `glab mr create`) — nao o `pi`.
+O hook `.claude/hooks/block-dangerous-git.sh` só vale pra sessoes de Claude Code, nao pro `pi` — ainda assim, a convencao do repo (branch de feature, nunca push direto em `dev`/`qa`/`hml`/`master`) vale igual. Quando **todas** as specs de uma feature estiverem prontas, quem abre a merge request pra `dev` e faz a revisao final é o fluxo de fora, com Claude Code (`/code-review`, depois `glab mr create`) — nao o `pi`. A promocao de `dev` pra `qa`/`hml`/`master` fica com a esteira de deploy, nao com nenhum agente.
 
 ## Rodando 4 specs ao mesmo tempo, em tela cheia: Alethe
 

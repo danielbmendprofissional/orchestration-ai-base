@@ -1,6 +1,8 @@
 # Issue tracker: GitLab
 
-Issues e specs deste repo vivem como issues do GitLab (`gitlab.com/personal.daniel.bmend/ai-base`). Use a CLI [`glab`](https://gitlab.com/gitlab-org/cli) para todas as operações.
+**Estado atual (template):** este `ai-base` não é um projeto de trabalho — é o template. Cada projeto real criado a partir dele tem seu próprio repositório GitLab, com sua própria URL. A intenção é usar o **GitLab MCP** (a configurar quando um projeto real nascer deste template) em vez da CLI `glab` — o MCP dá acesso estruturado a issues/MRs sem depender de um binário instalado à parte.
+
+Até essa configuração acontecer, os comandos `glab` abaixo funcionam como **fallback manual** (útil pra testar o fluxo neste próprio template, ou em qualquer projeto antes do MCP estar de pé). Quando o MCP for configurado num projeto real, atualize este arquivo trocando os comandos `glab` pelas chamadas de ferramenta do MCP equivalentes — a lógica de convenção (wayfinding, labels, etc.) continua a mesma.
 
 ## Convenções
 

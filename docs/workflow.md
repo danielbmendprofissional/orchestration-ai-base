@@ -17,8 +17,12 @@ Pipeline padrão deste projeto base, construído em cima das skills de Matt Poco
         ↓
 commit (mensagens claras, um commit por unidade lógica)
         ↓
-merge request → branch protegida (main) → validação humana (Daniel aprova)
+merge request → dev (branch protegida) → validação humana (Daniel aprova)
+        ↓
+esteira de deploy promove: dev → qa → hml → master
 ```
+
+O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`master` diretamente; a promoção entre essas é responsabilidade da esteira (a configurar, item de infra do projeto), não de um push manual. Hotfix direto em `master` é uma rota futura, ainda não habilitada, e mesmo quando existir vai continuar exigindo aprovação de código humana prévia — não é bypass do processo, é uma variante dele.
 
 ## Onde cada skill entra
 
@@ -34,7 +38,7 @@ merge request → branch protegida (main) → validação humana (Daniel aprova)
 
 **Review.** `/code-review` avalia o diff contra dois eixos independentes: os padrões do repo (estilo, arquitetura, `docs/adr/`) e a conformidade com a spec original (`to-spec`). Rodar antes de abrir a merge request, não depois.
 
-**Commit → Merge Request → branch protegida.** Commit granular, MR contra `main` (branch protegida — configuração em `.gitlab-ci.yml` e nas proteções do projeto no GitLab), merge só após validação humana. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
+**Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida — configuração em `.gitlab-ci.yml` e nas proteções do projeto no GitLab), merge só após validação humana. Dali em diante a promoção pra `qa` → `hml` → `master` é responsabilidade da esteira de deploy, não de uma nova MR manual do agente. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
 
 ## Skills de apoio (usar quando a situação pedir, fora da sequência linear)
 
