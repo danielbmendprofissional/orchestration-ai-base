@@ -120,6 +120,50 @@ Cada painel agora é uma sessão `pi` independente. Quando você tiver 4 specs p
 
 ---
 
+## 8. Skills oficiais do Angular (nesta pasta `ai-base`, valem pro template todo)
+
+**Terminal: "PowerShell" (normal)**, dentro da pasta do repo:
+
+```powershell
+cd "C:\Users\danib\source\repos\ai-base"
+npx skills add https://github.com/angular/skills
+```
+
+Isso instala as skills `angular-developer` e `angular-new-app`. Não precisa `--all` nem `-a claude-code` aqui — se o instalador perguntar o agente-alvo, escolha só Claude Code, igual fizemos com as skills do Matt Pocock.
+
+## 9. Cadeia de design anti-ai-slop — instala por PROJETO REAL, não aqui no template
+
+Os dois comandos abaixo só fazem sentido dentro de um projeto Angular de verdade (com `npm start`/`ng serve` rodando em localhost), não dentro do `ai-base` (que não é uma aplicação). Guardo aqui só pra não perder o comando na hora certa.
+
+**`ui-ux-pro-max-skill`** (motor de direção de design, 22 frameworks incluindo Angular):
+
+```powershell
+npm install -g ui-ux-pro-max-cli
+uipro init --ai claude
+```
+
+**`impeccable.style`** (Node 22.12+ necessário — `node -v` deve mostrar 22.12 ou mais novo; se não, atualiza o Node antes):
+
+```powershell
+npx impeccable install
+```
+
+Depois, dentro de uma sessão do Claude Code aberta naquele projeto:
+
+```
+/impeccable init
+/impeccable detect
+/impeccable audit
+```
+
+E os comandos de correção conforme o `audit` indicar: `/impeccable adapt`, `/impeccable harden`, `/impeccable polish`.
+
+**PrimeNG** (biblioteca de componentes Angular default — também por projeto, não aqui):
+
+```powershell
+npm install primeng @primeng/themes
+```
+
 ## O que eu NÃO coloquei aqui
 
 `git push` continua proibido até você aprovar o que já foi commitado (`git log --oneline` mostra os commits locais). Nenhum comando desta lista dá push em nada.

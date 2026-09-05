@@ -1,12 +1,17 @@
 # Design tokens — ponto de partida
 
-Este arquivo é um **starter**, não a resposta final: quando um projeto real nascer deste template e tiver uma marca/identidade definida, estes valores devem ser substituídos pelos tokens reais daquele projeto. O que fica fixo é a **estrutura** (ter uma escala, não valores soltos) — o `ui` (`.pi/agents/ui.md`) deve sempre consumir tokens daqui, nunca inventar um valor de cor/espaçamento ad-hoc no meio de uma task.
+Este arquivo é um **starter/seed**, não a resposta final. Desde a adoção da cadeia `ui-ux-pro-max-skill` + `impeccable.style` (ver `principios.md`), a fonte de verdade viva do design de um projeto real passa a ser o `DESIGN.md` gerado por `/impeccable init` (formato "Google Stitch") na raiz daquele projeto — este `tokens.md` serve pra alimentar esse `init` com um ponto de partida consciente, em vez de deixar a IA inventar cor/fonte na hora zero. O que fica fixo é a **estrutura** (ter uma escala, não valores soltos), não os valores em si.
 
-Formato neutro (JSON/CSS vars), pra não prender a um framework — quando o stack do projeto for escolhido, mapeie estes tokens pro idioma dele (`tailwind.config`, tema do styled-components, CSS custom properties, etc.) uma vez, no início do projeto.
+Formato neutro (JSON), pra não prender a um framework — o mapeamento real acontece assim:
+
+- **Angular (default deste template)**: os valores viram o tema do **PrimeNG** (Design Tokens da API de Theming, `definePreset`) e/ou variáveis CSS (`:root { --p-primary-color: ... }`), nunca classe utilitária Tailwind — ver `component-library.md`.
+- **React (landing page isolada)**: `tailwind.config` ou tema do shadcn/ui, como antes.
+
+O `ui` (`.pi/agents/ui.md`) deve sempre consumir tokens a partir do tema já mapeado (PrimeNG preset ou `DESIGN.md` do projeto), nunca inventar um valor de cor/espaçamento ad-hoc no meio de uma task.
 
 ## Cor
 
-Evite o par roxo/azul de gradiente (P0 do catálogo de `avoid-ai-design`) como default não-escolhido. Escolha uma cor de marca real quando o projeto tiver uma; até lá, use esta paleta neutra como placeholder — ela existe pra não deixar a task de `ui` cair no azul/indigo de fábrica por preguiça:
+Evite o par roxo/azul de gradiente (P0 do catálogo de `avoid-ai-design`, ver `principios.md`) como default não-escolhido. Escolha uma cor de marca real quando o projeto tiver uma; até lá, use esta paleta neutra como placeholder — ela existe pra não deixar a task de `ui` cair no azul/indigo de fábrica por preguiça:
 
 ```json
 {
@@ -39,7 +44,7 @@ Evite o par roxo/azul de gradiente (P0 do catálogo de `avoid-ai-design`) como d
 
 ## Tipografia
 
-Nunca `Inter`/`Roboto`/system default sem essa ter sido uma decisão consciente (é o P0 nº1 do catálogo). Escolha uma combinação com pelo menos uma fonte de display quando o projeto justificar (marketing, landing); pra dashboards/app, prioriza legibilidade sobre personalidade, mas ainda assim escolhida, não default:
+Nunca `Inter`/`Roboto`/system default sem essa ter sido uma decisão consciente (é o P0 nº1 do catálogo). Escolha uma combinação com pelo menos uma fonte de display quando o projeto justificar (marketing, landing); pra dashboards/app Angular (o caso comum aqui), prioriza legibilidade sobre personalidade, mas ainda assim escolhida, não default:
 
 ```json
 {
@@ -63,7 +68,7 @@ Nunca `Inter`/`Roboto`/system default sem essa ter sido uma decisão consciente 
 
 ## Espaçamento
 
-Escala geométrica, não "gap-4/p-6 uniforme em tudo" (P1 do catálogo — falta de ritmo):
+Escala geométrica, não "gap/padding uniforme em tudo" (P1 do catálogo — falta de ritmo):
 
 ```json
 {
@@ -84,7 +89,7 @@ Escala geométrica, não "gap-4/p-6 uniforme em tudo" (P1 do catálogo — falta
 
 ## Raio e sombra
 
-Não usar `rounded-2xl shadow-lg` em toda superfície por reflexo (P1). Ter no máximo 2-3 níveis, usados com intenção:
+Não usar o mesmo raio/sombra em toda superfície por reflexo (P1 — no PrimeNG isso é o preset "Aura"/"Lara" default intocado, ver `component-library.md`). Ter no máximo 2-3 níveis, usados com intenção:
 
 ```json
 {
@@ -98,9 +103,10 @@ Não usar `rounded-2xl shadow-lg` em toda superfície por reflexo (P1). Ter no m
 
 ## Movimento
 
-Padrão: nenhum, a menos que a task de `ui` justifique. Se precisar, nunca o mesmo `fade-in-up` genérico em tudo (P2) — variar a transição conforme o contexto (entrada de modal ≠ hover de card ≠ toast).
+Padrão: nenhum, a menos que a task de `ui` justifique. Se precisar, usar `anime.js` (ou a API vanilla do `Motion`, ver `component-library.md`) e nunca o mesmo "fade-in-up" genérico em tudo (P2) — variar a transição conforme o contexto (entrada de modal ≠ hover de card ≠ toast).
 
-## Quando o stack for definido
+## Quando o projeto real nascer deste template
 
-1. Copie os valores acima pro formato nativo do stack escolhido (Tailwind: `tailwind.config`; CSS puro: `:root { --color-brand-500: ... }`; etc.).
-2. Apague este comentário e registre no `CONTEXT.md` do projeto que os tokens vivem naquele arquivo daqui pra frente — este `tokens.md` do template deixa de ser a fonte de verdade assim que o projeto real tiver a sua própria.
+1. Rode a cadeia de `principios.md`: `ui-ux-pro-max-skill` pra direção inicial, depois `/impeccable init` pra gerar o `DESIGN.md`/`PRODUCT.md` reais do projeto, usando os valores acima como seed consciente em vez de deixar a ferramenta partir do zero.
+2. Mapeie os valores pro preset de tema do PrimeNG (`definePreset`, `@primeng/themes`).
+3. Registre no `CONTEXT.md` do projeto que os tokens vivem no `DESIGN.md`/preset dali pra frente — este `tokens.md` do template deixa de ser a fonte de verdade assim que o projeto real tiver a sua própria.
