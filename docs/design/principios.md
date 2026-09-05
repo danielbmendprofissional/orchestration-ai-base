@@ -64,6 +64,10 @@ Duas ferramentas entram **antes** do passo 1, alimentando o que a task de `ui` p
 
 Ver `referencias.md` pro catálogo completo de sites citados pelo usuário, incluindo os que servem só como inspiração visual (não ferramenta consultável por agente).
 
+## Custo: onde gastar esforço e (Google AI Plus) cota antes de sair pagando mais
+
+Ver `ferramentas-por-custo.md` — mapeia toda a cadeia acima (Claude Code, skills de Design/Dataviz do próprio Claude Code, Google AI Plus, ui-ux-pro-max-skill, impeccable, Figma) por camada de custo, com uma tabela de "preciso de X → uso Y primeiro". A regra curta: Camada 0 (já pago fixo, Claude Code) > Camada 1 (Google AI Plus, dentro da cota) > Camada 2 (gratuito fora de assinatura) > Camada 3 (custo extra — evitar sem necessidade clara).
+
 ## Figma (free tier, uso pontual)
 
 Não é etapa do fluxo padrão. Fica disponível só pra quando um humano não-técnico precisar visualizar/discutir uma tela antes do código — nesse caso, tier gratuito é suficiente (poucos arquivos, sem necessidade de plano pago). Se usado, o resultado ainda passa pela cadeia acima quando virar código: Figma nunca substitui `impeccable detect` contra a app real.
