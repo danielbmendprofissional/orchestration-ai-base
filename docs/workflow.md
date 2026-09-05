@@ -50,4 +50,4 @@ merge request → branch protegida (main) → validação humana (Daniel aprova)
 
 `/implement` é o ponto de handoff natural para os executores (Deepseek Flash / GPT-5.6 Luna via OpenCode ou pi.dev): a spec e o ticket já estão fechados antes de chegar aqui, então a etapa mecânica de TDD é onde o modelo mais barato entra. Claude Code permanece responsável por discovery, spec, tickets e review — a parte que exige julgamento.
 
-Detalhamento da arquitetura de agentes (4 agentes pais + subagents) fica em `docs/agents/orchestration.md` quando essa frente for fechada.
+Detalhamento da arquitetura de agentes (pi.dev + subagents deepseek-flash/gpt-5.6-luna, um `pi` por spec, layout de 4 paineis no Alethe) fica em `docs/agents/orchestration.md`.
