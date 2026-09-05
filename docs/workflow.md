@@ -34,9 +34,9 @@ O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/
 
 **Spec e tickets (SDD, núcleo).** `/to-spec` converte a conversa de discovery numa spec formal publicada como issue no GitLab. `/to-tickets` quebra a spec em tickets rastreáveis (fatias), cada um declarando o que bloqueia e o que é bloqueado.
 
-**Implementação (TDD, núcleo).** `/implement` executa um ticket nos pontos de integração combinados, test-first — a skill `tdd` (red-green-refactor) roda dentro dela. Não escrever código de produção sem um teste vermelho antes.
+**Implementação (TDD, núcleo).** `/implement` executa um ticket nos pontos de integração combinados, test-first — a skill `tdd` (red-green-refactor) roda dentro dela. Não escrever código de produção sem um teste vermelho antes. Quando a task tiver fatia de UI (ver `docs/agents/orchestration.md`), ela segue `docs/design/` (tokens, biblioteca de componentes, princípios anti-ai-slop) — não é opcional.
 
-**Review.** `/code-review` avalia o diff contra dois eixos independentes: os padrões do repo (estilo, arquitetura, `docs/adr/`) e a conformidade com a spec original (`to-spec`). Rodar antes de abrir a merge request, não depois.
+**Review.** `/code-review` avalia o diff contra dois eixos independentes: os padrões do repo (estilo, arquitetura, `docs/adr/`) e a conformidade com a spec original (`to-spec`). Rodar antes de abrir a merge request, não depois. Se o diff tocar UI, rodar também `/skill:avoid-ai-design detect` (ver `docs/design/`) como segunda camada — a task de `ui` já deveria ter feito essa auditoria, mas isso confirma que nada passou batido.
 
 **Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida — configuração em `.gitlab-ci.yml` e nas proteções do projeto no GitLab), merge só após validação humana. Dali em diante a promoção pra `qa` → `hml` → `master` é responsabilidade da esteira de deploy, não de uma nova MR manual do agente. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
 
