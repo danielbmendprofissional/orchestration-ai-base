@@ -28,6 +28,12 @@ Criar uma issue no GitLab.
 
 Rodar `glab issue view <number> --comments`.
 
+## Quando a Spec já existe como arquivo versionado no repo
+
+Alguns projetos nascidos do `ai-base` (ex: `valuto`) guardam a Spec como arquivo Markdown dentro do próprio repo (`specs/feature/{module}/NN-nome.md`), não só como issue — é a fonte de verdade, versionada junto com o código, com uma seção `## Contexto necessário` explícita porque nem todo executor empilha `CLAUDE.md` automaticamente por pasta. Nesse modelo, `/to-spec` não substitui o arquivo por uma issue: ele **abre uma issue-mãe que referencia o arquivo** (link relativo + resumo na descrição, nunca o conteúdo inteiro copiado). Essa issue-mãe é a superfície que os agentes-pai (`pi`, um por spec, um painel do Alethe cada) usam pra orquestrar os subagents via GitLab — mesmo papel que o **map** cumpre nas operações de wayfinding abaixo. `/to-tickets` continua criando as issues filhas normalmente, cada uma `Part of #<issue-mãe>`.
+
+Se o projeto não tiver esse modelo de arquivo (caso comum — spec pequena/urgente, ou projeto que ainda não adotou a convenção), `/to-spec` volta a publicar a spec inteira como issue, como descrito no resto deste documento. *(Decisão 2026-09-07.)*
+
 ## Operações de wayfinding
 
 Usadas por `/wayfinder`. O **map** é uma issue única com issues **filhas** como tickets.
