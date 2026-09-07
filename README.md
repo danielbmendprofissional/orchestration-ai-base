@@ -4,7 +4,7 @@ Projeto base para todo novo workflow assistido por IA — stack-agnóstico (nenh
 
 ## O que tem aqui hoje
 
-- `.claude/skills/` — 25 skills de engenharia (Matt Pocock / mattpocock/skills), cobrindo discovery, spec, tickets, TDD, review e apoio (debug, merge conflicts, retro, handoff). Todas exigem invocação explícita (`disable-model-invocation: true`), nenhuma dispara sozinha.
+- `.claude/skills/` — **não versionado** (ver `.gitignore`): todas as skills vêm de fora e são reinstaláveis por comando, então o conteúdo não é commitado, só a receita. 25 skills de engenharia (Matt Pocock / mattpocock/skills — discovery, spec, tickets, TDD, review, apoio) + `avoid-ai-design` (audita/reescreve UI genérica de IA, `funboy322/avoid-ai-design`). Instalação em `docs/comandos-para-rodar.md`, seção 8. Todas exigem invocação explícita (`disable-model-invocation: true`), nenhuma dispara sozinha. `skills-lock.json` (esse sim versionado) registra origem + hash de cada skill instalada via `npx skills add`, pra reinstalar/atualizar de forma reprodutível.
 - `docs/workflow.md` — o pipeline completo: discovery → spec → tickets → TDD → review → commit → merge request → dev → (esteira) → qa → hml → master.
 - `docs/agents/` — configuração das skills para este repo (issue tracker = GitLab via MCP a configurar por projeto, labels de triagem, layout de docs de domínio) e `orchestration.md` com a arquitetura de execução.
 - `.pi/` — camada de execução: pi.dev com 7 subagents de papel (data, backend, front, ui, tests, security, review) em Deepseek V4 Flash / GPT-5.6 Luna, um `pi` por spec, 4 painéis em paralelo via Alethe.

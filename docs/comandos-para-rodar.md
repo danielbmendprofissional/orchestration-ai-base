@@ -120,16 +120,43 @@ Cada painel agora é uma sessão `pi` independente. Quando você tiver 4 specs p
 
 ---
 
-## 8. Skills oficiais do Angular (nesta pasta `ai-base`, valem pro template todo) — ✅ executado em 2026-09-05, ver `docs/log-execucao.md`
+## 8. Instalar as skills — Matt Pocock, Angular, avoid-ai-design
+
+Nenhuma dessas skills é escrita à mão neste repo: todas vêm de fora e são reinstaláveis por comando. Por isso `.claude/skills/*` não é versionado (ver `.gitignore`) — o que fica commitado é só o `skills-lock.json` (registra origem + hash de cada uma, pra reinstalar/atualizar de forma reprodutível). Rodar de novo estes comandos é sempre seguro: reinstala/atualiza, não duplica.
 
 **Terminal: "PowerShell" (normal)**, dentro da pasta do repo:
 
 ```powershell
 cd "C:\Users\danib\source\repos\ai-base"
+```
+
+**Matt Pocock (25 skills de engenharia — discovery, spec, tickets, TDD, review, apoio: debug, merge conflicts, retro, handoff) — ✅ já instalado, ver `docs/log-execucao.md`:**
+
+```powershell
+npx skills add https://github.com/mattpocock/skills
+```
+
+**Angular (`angular-developer`, `angular-new-app`) — ✅ executado em 2026-09-05, ver `docs/log-execucao.md`:**
+
+```powershell
 npx skills add https://github.com/angular/skills
 ```
 
-Isso instala as skills `angular-developer` e `angular-new-app`. Não precisa `--all` nem `-a claude-code` aqui — se o instalador perguntar o agente-alvo, escolha só Claude Code, igual fizemos com as skills do Matt Pocock.
+Os dois comandos acima são interativos (perguntam quais skills e qual agente-alvo) — escolha "Select All" e "Claude Code". Pra automação sem prompt (o jeito que rodou de fato em 2026-09-05, ver o log): `npx skills add <repo> -s '*' -a claude-code -y`.
+
+**`avoid-ai-design`** (audita/reescreve UI que caiu em padrão genérico de IA) — não usa o instalador `skills`, é `git clone` direto — ✅ já instalado, ver `docs/log-execucao.md`:
+
+```powershell
+git clone https://github.com/funboy322/avoid-ai-design.git .claude/skills/avoid-ai-design
+```
+
+Depois de qualquer um desses comandos, confirme dentro de uma sessão Claude Code:
+
+```
+/skills
+```
+
+Deve listar as skills instaladas.
 
 ## 9. Cadeia de design anti-ai-slop — instala por PROJETO REAL, não aqui no template
 
