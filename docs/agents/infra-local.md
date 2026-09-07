@@ -29,6 +29,10 @@ Isso muda dois arquivos que ainda não foram tocados:
 - `infra/container/docker-compose.yml` — precisa ganhar o(s) serviço(s) do DefectDojo (ele mesmo é multi-serviço: Django/uWSGI, Celery, Postgres próprio ou compartilhado, Redis próprio ou compartilhado — decidir se o DefectDojo reaproveita o Postgres/Redis já existentes no `infra` ou mantém os seus, na hora de implementar).
 - `Security-Scanner/README.md` — a seção "DefectDojo não faz parte deste repositório" precisa ser atualizada pra apontar pro `infra` como o lugar onde ele roda, mantendo as instruções de credencial (`DEFECTDOJO_URL`/`DEFECTDOJO_API_KEY` via User Secrets/variável de ambiente) como estão.
 
+## Observabilidade e backup
+
+Duas lacunas identificadas nesta mesma conversa — a infra compartilhada não tinha nenhuma peça de logging/monitoramento, e o Postgres compartilhado (já com dado real do Valuto) não tinha estratégia de backup. Decisão registrada à parte em `docs/agents/observabilidade-backup.md` (Grafana+Loki+Prometheus completo, dentro deste mesmo `docker-compose.yml`; backup via `pg_dump` local + cópia externa no Google Drive) — mesma regra de "não implementado ainda" deste documento.
+
 ## O que ainda não foi decidido
 
 - Se o DefectDojo compartilha o Postgres/Redis do `infra` ou mantém instâncias próprias dentro do mesmo compose (fica pra hora de implementar).
