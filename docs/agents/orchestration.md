@@ -1,88 +1,25 @@
-# Orquestracao de execucao: pi.dev + Alethe
+# Orquestração de execução: pi.dev + Alethe
 
-Camada de EXECUCAO deste projeto (item 4). Fica por dentro do passo `/implement` de `docs/workflow.md`: Claude Code fecha a spec e as tasks (data, backend, front, ui, tests, review, security); a partir dai, quem executa é uma sessao `pi` (pi.dev) rodando neste repo, com subagents fazendo cada task. Claude Code entra de novo depois, de fora, pra revisar/validar antes do merge request.
+Camada de execução, dentro do passo `/implement` de `docs/workflow.md`: Claude Code fecha spec e tasks (data, backend, front, ui, tests, review, security); uma sessão `pi` (pi.dev) executa, com subagents fazendo cada task; Claude Code entra de novo depois pra revisar/validar antes da MR.
 
-Nao existe um "agente pai" fixo além do proprio processo `pi` — cada CLI `pi` que voce abre (uma por spec) É o agente pai daquela spec, orquestrando os subagents abaixo dela via a tool `task`.
+Não existe agente-pai fixo além do próprio processo `pi` — cada CLI `pi` aberta (uma por spec) é o agente-pai daquela spec, orquestrando os subagents via a tool `task`.
 
-Economia de tokens nesta camada: RTK ligado (se o `pi` tiver suporte — ver `pratices/tokens/caveman-rtk.md` seção 7), Caveman **nunca** — Caveman é exclusivo de sessões Claude Code (discovery/grill-me/review), nunca dos subagents de execução.
+Economia de tokens: RTK ligado (se o `pi` suportar — ver `pratices/tokens/caveman-rtk.md`). Caveman nunca — exclusivo de sessões Claude Code.
 
-## O que ja esta pronto neste repo
+## Subagents (`.pi/agents/*.md`)
 
-- `.pi/extensions/subagent/` — extensao oficial do pi.dev (vendorizada, ver o README dela pra saber o que foi alterado) que da ao `pi` a tool `task` (single / parallel / chain de subagents).
-- `.pi/agents/*.md` — os 7 subagents de papel: `data`, `backend`, `front`, `ui`, `tests`, `security`, `review`. `data`/`backend`/`tests`/`security` rodam em `deepseek/deepseek-v4-flash`; `front`/`ui`/`review` em `openai/gpt-5.6-luna`. Mude o campo `model:` de qualquer um se quiser trocar.
-- `.pi/extensions/subagent/prompts/implement-task.md` — comando `/implement-task <descricao>` que encadeia os 7 papeis numa chain (pula os que nao se aplicam, nunca pula tests/security/review).
+7 papéis: `data`, `backend`, `front`, `ui`, `tests`, `security`, `review`. Sem papel fixo de modelo — qualquer um pode rodar em `deepseek/deepseek-v4-flash` ou `openai/gpt-5.6-luna`, campo `model:` de cada arquivo controla isso.
 
-## Instalar o pi.dev na sua maquina (Windows)
+Comando `/implement-task <descrição>` encadeia os 7 papéis, pulando os que não se aplicam — nunca pula `tests`/`security`/`review`.
 
-Isso precisa rodar no SEU terminal real (PowerShell ou Git Bash), nao dentro do sandbox do Cowork — o que eu instalei aqui foi só pra validar a config, nao fica disponivel pra voce usar depois desta sessao.
+## Depois do `review` dar PASS
 
-```powershell
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
+O agente-pai (`pi`) faz commit/push da branch de feature — nunca push direto em `dev`/`qa`/`hml`/`master`, mesma convenção do resto do repo (o hook `.claude/hooks/block-dangerous-git.sh` só roda em sessão Claude Code, não no `pi`, mas a regra vale igual pra ele).
 
-Pi usa Git Bash no Windows por padrao (checa `C:\Program Files\Git\bin\bash.exe`) — se voce ja usa `git` normalmente, o Git for Windows ja deve estar instalado.
+`/code-review` roda manual, local, numa sessão interativa normal do Claude Code (nunca headless/`-p` disparado pelo CI — risco de cobrança fora do plano de assinatura). Ao terminar com PASS, grava `.pi/code-review-ok.json` (hash do commit revisado + data/hora) — esse arquivo entra no commit normal da branch.
 
-## Autenticar Deepseek e GPT-5.6 Luna
+O push em `feature/*` dispara um stage `verify-code-review` no GitLab CI: só bash, sem chamar IA nenhuma — confere se `.pi/code-review-ok.json` existe e se o hash gravado bate com o commit do push. Bateu: o mesmo job abre a MR pra `dev` automaticamente (`glab mr create --target-branch dev`). Não bateu ou não existe: pipeline falha, nenhuma MR é aberta — quem estiver rodando o `pi` precisa rodar `/code-review` de novo antes de reenviar. Promoção `dev → qa/hml/master` é a esteira de deploy (ver `docs/agents/esteira-deploy.md`), nenhum agente faz isso diretamente.
 
-Os dois são providers **built-in** do pi.dev — não precisa de `models.json`, só autenticar:
+## Execução paralela
 
-```powershell
-$env:DEEPSEEK_API_KEY="sua-chave-deepseek"
-$env:OPENAI_API_KEY="sua-chave-openai"
-```
-
-Ou, dentro de uma sessao `pi` interativa: `/login deepseek` e `/login openai` (grava em `~/.pi/agent/auth.json`, sobrevive entre sessoes — nao precisa repetir a variavel de ambiente toda vez).
-
-## Rodar uma spec
-
-Dentro da pasta do repo (numa branch de feature ou de spec já criada por voce/Claude Code):
-
-```
-pi
-```
-
-O `pi` carrega `CLAUDE.md` automaticamente (ele le `AGENTS.md`/`CLAUDE.md` por padrao) e os 7 subagents de `.pi/agents/`. Dentro da sessao:
-
-```
-/implement-task Tela de cadastro de usuario: validar CPF, salvar em users, exibir erro de duplicidade
-```
-
-Ou, pra rodar so uma fatia (task pontual sem precisar do prompt inteiro):
-
-```
-Use o agent "backend" para: endpoint POST /users com validacao de CPF
-```
-
-Ou em paralelo (fatias que nao dependem uma da outra):
-
-```
-Rode data e front em paralelo: data cria a tabela users; front monta o formulario de cadastro consumindo /users
-```
-
-## O agente pai valida e sobe a branch
-
-Depois que o subagent `review` (ultimo da chain) devolver `PASS`, é o proprio `pi` (voce, na sessao) quem roda o commit/push — ele nao faz isso sozinho de forma automatica, é um passo que voce (ou uma instrucao sua dentro da sessao) dispara:
-
-```
-git add -A && git commit -m "..." && git push origin feature/<spec>
-```
-
-O hook `.claude/hooks/block-dangerous-git.sh` só vale pra sessoes de Claude Code, nao pro `pi` — ainda assim, a convencao do repo (branch de feature, nunca push direto em `dev`/`qa`/`hml`/`master`) vale igual. Quando **todas** as specs de uma feature estiverem prontas, quem abre a merge request pra `dev` e faz a revisao final é o fluxo de fora, com Claude Code (`/code-review`, depois `glab mr create`) — nao o `pi`. A promocao de `dev` pra `qa`/`hml`/`master` fica com a esteira de deploy, nao com nenhum agente.
-
-## Rodando 4 specs ao mesmo tempo, em tela cheia: Alethe
-
-[Alethe](https://github.com/Kc1t/alethe-agents) (`Kc1t/alethe-agents`) é um workspace desktop free e open source (AGPL-3.0-or-later), com instalador nativo pra Windows, macOS e Linux. Ele não conhece o `pi.dev` como agente "nomeado" (a lista dele cita Claude Code, Codex, OpenCode) — mas gerencia PTYs/terminais genéricos com layouts de grid, split-pane e sub-tabs, então roda `pi` como qualquer outro comando de terminal, sem diferença prática.
-
-Uso: abra o Alethe, monte um layout de grid 4 paineis, e em cada painel:
-
-```
-cd caminho\para\ai-base
-git checkout -b feature/<feature>/<spec-N>   # uma branch por spec
-pi
-```
-
-Cada painel vira uma sessao `pi` independente orquestrando uma spec. O Alethe guarda layout e historico de sessao, entao da pra fechar e retomar depois.
-
-## Sobre o Gas Town (nota, nao usado por enquanto)
-
-O Gas Town (`gastownhall/gastown`) automatiza uma camada acima disso — uma fila de merge (Refinery) que valida e junta o trabalho de varias specs (Convoys/Beads) automaticamente, sem voce acompanhar terminal por terminal. Fica registrado como opcao futura se este fluxo manual (4 paineis do Alethe) virar gargalo — não foi adotado agora porque o pedido era orquestrar via pi.dev diretamente.
+Múltiplas specs rodam em sessões `pi` paralelas, uma branch de feature por spec (via Alethe — instalação/uso em `docs-human/comandos-para-rodar.md`).

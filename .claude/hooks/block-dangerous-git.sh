@@ -25,9 +25,18 @@ done
 
 # Push direto pra qualquer branch protegida do fluxo de promoção
 # (feature-x -> MR -> dev -> qa -> hml -> master; main/master ficam como fallback
-# genérico pra repos que ainda não adotaram o fluxo completo). Hotfix direto em
-# master fica pra quando existir aprovação humana prévia configurada — não é
-# esse hook que vai decidir isso.
+# genérico pra repos que ainda não adotaram o fluxo completo).
+#
+# Este hook só roda em sessão Claude Code (ver .claude/settings.json) — não
+# vale pro `pi`, que é quem de fato promove dev->qa com merge+push direto
+# (ver docs/agents/esteira-deploy.md). Claude Code nunca deveria estar
+# fazendo esses pushes de qualquer forma, então o bloqueio abaixo continua
+# certo pro papel dele: discovery/spec/review, MR pra 'dev', nunca push
+# direto em branch protegida.
+#
+# Hotfix (branch/xxx a partir de master, MR, aprovação humana — ver
+# docs/agents/esteira-deploy.md) também não esbarra aqui: o agente só empurra
+# a branch `hotfix/xxx`, nunca push direto em `master`.
 PROTECTED_BRANCHES="main|master|dev|qa|hml"
 if echo "$COMMAND" | grep -qE "git push[^|&;]*\s(origin\s+)?($PROTECTED_BRANCHES)(\s|$)"; then
   echo "BLOCKED: '$COMMAND' — push direto em branch protegida. Abra uma feature branch e uma merge request pra 'dev'." >&2

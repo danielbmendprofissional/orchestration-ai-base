@@ -1,22 +1,21 @@
 # ai-base
 
-Projeto base para todo novo workflow assistido por IA — stack-agnóstico (nenhuma decisão de frontend/backend vive aqui). O que este repo fixa é o **processo**.
+Projeto base pra todo novo workflow assistido por IA — stack-agnóstico no backend, Angular fixo no frontend. O que este repo fixa é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request → esteira de deploy.
 
-## O que tem aqui hoje
+## Por onde começar
 
-- `.claude/skills/` — **não versionado** (ver `.gitignore`): todas as skills vêm de fora e são reinstaláveis por comando, então o conteúdo não é commitado, só a receita. 25 skills de engenharia (Matt Pocock / mattpocock/skills — discovery, spec, tickets, TDD, review, apoio) + `avoid-ai-design` (audita/reescreve UI genérica de IA, `funboy322/avoid-ai-design`). Instalação em `docs/comandos-para-rodar.md`, seção 8. Todas exigem invocação explícita (`disable-model-invocation: true`), nenhuma dispara sozinha. `skills-lock.json` (esse sim versionado) registra origem + hash de cada skill instalada via `npx skills add`, pra reinstalar/atualizar de forma reprodutível.
-- `docs/workflow.md` — o pipeline completo: discovery → spec → tickets → TDD → review → commit → merge request → dev → (esteira) → qa → hml → master.
-- `docs/agents/` — configuração das skills para este repo (issue tracker = GitLab via MCP a configurar por projeto, labels de triagem, layout de docs de domínio) e `orchestration.md` com a arquitetura de execução.
-- `.pi/` — camada de execução: pi.dev com 7 subagents de papel (data, backend, front, ui, tests, security, review) em Deepseek V4 Flash / GPT-5.6 Luna, um `pi` por spec, 4 painéis em paralelo via Alethe.
-- `pratices/tokens/` — configuração e benchmarks reais de economia de tokens (RTK sempre ligado; Caveman só em sessões Claude Code, nunca nos subagents de execução).
-- `.claude/hooks/` — guardrail de git: bloqueia push direto em `main`/`master`/`dev`/`qa`/`hml`.
-- `docs/design/` — Angular fixo como stack de frontend (PrimeNG + skills oficiais do Angular, `component-library.md`); cadeia anti-ai-slop `ui-ux-pro-max-skill` -> `impeccable.style` (`detect`/`audit`/`adapt`/`harden`/`polish`) -> `avoid-ai-design` como rede de segurança (`principios.md`); tokens de design seed (`tokens.md`); catálogo de sites de referência de UI/motion (`referencias.md`); mapa de qual ferramenta usar por custo, misturando Claude Code (skills de Design/Dataviz) com Google AI Plus (`ferramentas-por-custo.md`). `.claude/skills/avoid-ai-design/` audita/reescreve UI que caiu em padrão genérico de IA.
-- `CLAUDE.md` — instruções de projeto para o Claude Code.
+- **Configurar sua máquina** (pi.dev, Alethe, glab, autenticação, skills): `docs-human/comandos-para-rodar.md`.
+- **Ferramentas de design e onde gastar esforço/dinheiro**: `docs-human/ui-ux.md`.
+- **O que já foi decidido mas ainda não implementado**: `docs-human/pendencias.md`.
+- **O que já rodou de verdade** (comando por comando, com data e resultado): `docs-human/log-execucao.md`.
 
-## Em aberto (próximas frentes, em ordem)
+## Estrutura do repo
 
-1. Instalar de verdade, na máquina real, a cadeia de design/frontend (skills do Angular, `ui-ux-pro-max-cli`, `impeccable`) — comandos em `docs/comandos-para-rodar.md`.
-2. Branches protegidas + esteira de deploy no GitLab (SaaS) — **decisões já fechadas em conversa (2026-09-05), documentadas em `docs/agents/esteira-deploy.md`, implementação ainda pendente**: reuso via `include:` remoto do `template-ci` (repo separado, `gitlab.com/personal.daniel.bmend/template-ci` — não cópia dos arquivos), escopo Angular + .NET + banco (só Java fica de fora, específico de projetos como o TCE), promoção por tag (`vX.Y.Z`/`vX.Y.Z-rcN`) reaproveitando o gate de sequência/anti-contrabando, aprovação manual por ambiente, SAST/Secret Detection nativos do GitLab e smoke test pós-deploy que já existem lá. Dois pré-requisitos no `template-ci` bloqueiam a implementação: ele ainda não tem disciplina própria de tag/release (precisa pra dar um `ref:` estável ao include) e o deploy .NET ainda é MSDeploy acoplado (o `ai-base` só quer portar a versão "Package", build once/deploy many). Ver o documento pra detalhe completo, incluindo o que ainda não foi confirmado (quem cria a tag de promoção).
-3. Docker / Kubernetes + serviços de contexto (Redis, Postgres, RabbitMQ, Keycloak) — **decisões já fechadas em conversa (2026-09-05), documentadas em `docs/agents/infra-local.md`, implementação ainda pendente**: os serviços de contexto já existem e rodam de verdade num repo separado (`C:\Users\danib\source\repos\infra`, `gitlab.com/personal.daniel.bmend/infra`) — infra local **compartilhada** (uma instância permanente na máquina, não um compose por projeto; um banco por projeto dentro do mesmo Postgres, seguindo o padrão de `banco/valuto/` já existente lá). Kubernetes continua no plano apesar de nada estar implementado ainda (hoje é só Docker Compose de dev local). `Security-Scanner` (repo separado: CLI .NET que orquestra Trivy/Opengrep/Checkov/BetterLeaks/ZAP via Docker) teve sua decisão de DefectDojo fechada: unificar como serviço dentro do `docker-compose.yml` do `infra`, em vez de continuar como clone/compose separado do `django-DefectDojo`. Ver o documento pra detalhe completo, incluindo o que ainda não foi decidido (se o DefectDojo compartilha Postgres/Redis do `infra` ou mantém instâncias próprias, e o desenho de Kubernetes em si).
-
-Ver `docs/workflow.md` para como usar o que já está pronto e `docs/comandos-para-rodar.md` para o setup local ainda pendente (instalar pi.dev, Alethe, glab).
+- `CLAUDE.md` — instruções de projeto pro Claude Code.
+- `docs/workflow.md` — o pipeline completo, discovery → esteira de deploy.
+- `docs/agents/` — configuração de skills (issue tracker, labels de triagem, docs de domínio), orquestração de execução (`orchestration.md`), esteira de deploy (`esteira-deploy.md`), infra compartilhada (`infra-local.md`), observabilidade e backup.
+- `docs/design/` — stack de UI fixa (Angular + PrimeNG + Tailwind), cadeia anti-ai-slop (`principios.md`), tokens de design (`tokens.md`), catálogo de referência (`referencias.md`).
+- `.claude/skills/` — **não versionado** (ver `.gitignore`): skills reinstaláveis por comando, não commitadas. `skills-lock.json` (esse sim versionado) registra origem e hash de cada uma, pra reinstalar de forma reprodutível.
+- `.claude/hooks/` — guardrail de git (bloqueia push direto em branch protegida, force push, reset hard, etc — só vale pra sessão Claude Code).
+- `.pi/` — camada de execução: subagents de papel (data, backend, front, ui, tests, security, review) rodando via pi.dev.
+- `pratices/tokens/` — configuração de economia de token.

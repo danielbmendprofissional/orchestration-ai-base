@@ -1,9 +1,4 @@
 # Comandos pra rodar na sua máquina
-
-Tudo que eu montei até agora e que precisa de uma ação sua fora do Cowork. Cada bloco diz **qual terminal** usar. Na dúvida sobre qual shell abrir: aperte a tecla Windows, digite o nome exato entre aspas de cada seção abaixo, e abra o resultado.
-
-Ordem recomendada: 1 → 2 → 3 → 4 → 5 → 6 → 7.
-
 ---
 
 ## 1. Conferir pré-requisitos
@@ -198,6 +193,69 @@ ng add tailwindcss
 ```
 
 Se o `ng add` não existir ainda na versão do CLI do projeto, o caminho manual é `npm install tailwindcss @tailwindcss/postcss postcss` seguido da configuração descrita em `angular.dev/guide/tailwind` — mas tenta o `ng add` primeiro.
+
+## 10. Playwright (E2E/smoke test do agente `qa`) — via Docker
+
+Decidido: roda em container, imagem oficial (já vem com todos os browsers instalados, nada pra instalar no Windows). Precisa do Docker Desktop rodando.
+
+**Terminal: "PowerShell" (normal)**, dentro do projeto real (não no `ai-base`):
+
+```powershell
+docker pull mcr.microsoft.com/playwright:v1.48.0-noble
+```
+
+(Confira a tag mais recente em https://mcr.microsoft.com/en-us/product/playwright/tags antes de rodar, pra não ficar presa numa versão velha.)
+
+**Rodar os testes** (exemplo, a partir da pasta com os testes Playwright do projeto):
+
+```powershell
+docker run --rm -v "${PWD}:/work" -w /work mcr.microsoft.com/playwright:v1.48.0-noble npx playwright test
+```
+
+O agente `qa` (`.pi/agents/qa.md`) usa esse mesmo `docker run` por baixo quando roda via `bash` — não precisa de Playwright instalado fora do container.
+
+## 11. Nascimento de projeto novo — apontar pra infra compartilhada
+
+Toda vez que nascer um projeto novo (a partir deste template), rodar isso uma vez, apontando pro `docker-compose.yml` do repo `infra` já rodando:
+
+**Postgres** — criar o banco (dentro do container do Postgres):
+
+```powershell
+docker exec -it <container-postgres> psql -U postgres -c "CREATE DATABASE <projeto>;"
+```
+
+Depois criar `infra/banco/<projeto>/init-db.sql` (organização interna do banco — schema por módulo ou não — é decisão do projeto, não tem padrão obrigatório aqui).
+
+**RabbitMQ** — criar o vhost:
+
+```powershell
+docker exec -it <container-rabbitmq> rabbitmqctl add_vhost <projeto>
+docker exec -it <container-rabbitmq> rabbitmqctl set_permissions -p <projeto> guest ".*" ".*" ".*"
+```
+
+**Keycloak** — criar o realm (via Admin CLI dentro do container, depois de autenticar):
+
+```powershell
+docker exec -it <container-keycloak> /opt/keycloak/bin/kcadm.sh create realms -s realm=<projeto> -s enabled=true
+```
+
+**Redis** — criar o ACL user restrito ao prefixo do projeto:
+
+```powershell
+docker exec -it <container-redis> redis-cli ACL SETUSER <projeto> on ">senha-do-projeto" "~<projeto>:*" "+@all" "-@dangerous"
+```
+
+Guarda a senha gerada em cada passo do jeito que você já guarda as outras (não fica hardcoded em lugar nenhum versionado).
+
+## 12. Google Drive for Desktop (destino do backup)
+
+**Sem terminal — é um instalador gráfico.**
+
+1. Baixe em https://www.google.com/drive/download/
+2. Instale e logue com sua conta Google.
+3. Confirme que a pasta sincronizada é `G:\My Drive\ia` (já criada) — é pra dentro dela que a rotina de backup salva os dumps.
+
+Se você tiver Google AI Plus, já vem com 2TB — dump de Postgres pessoal não chega perto de encostar nesse limite. Sem o plano pago, o grátis (15GB) também é suficiente.
 
 ## O que eu NÃO coloquei aqui
 

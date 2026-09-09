@@ -17,16 +17,14 @@ Pipeline padrão deste projeto base, construído em cima das skills de Matt Poco
         ↓
 commit (mensagens claras, um commit por unidade lógica)
         ↓
-merge request → dev (branch protegida) → validação humana (Daniel aprova)
+merge request → dev (branch protegida) → validação humana
         ↓
-[passo ainda não confirmado — ver docs/agents/esteira-deploy.md: quem cria a tag vX.Y.Z que dispara a promoção]
+quando todas as specs da rodada estiverem em dev: agente-pai cria a tag vX.Y.Z-rcN
         ↓
-esteira de deploy promove por tag: dev → qa → hml → master
+esteira de deploy por tag (ver docs/agents/esteira-deploy.md): dev → qa (merge automático) → agente de QA testa → MR qa→hml (aprovação humana) → hml publicado (segunda aprovação humana) → merge master
 ```
 
-> A esteira de deploy (mecanismo, escopo de stack, modelo de promoção por tag) está decidida em conversa mas não implementada — ver `docs/agents/esteira-deploy.md` para o registro completo, incluindo o que ainda falta confirmar antes de montar o `.gitlab-ci.yml` de verdade.
-
-O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`master` diretamente; a promoção entre essas é responsabilidade da esteira (a configurar, item de infra do projeto), não de um push manual. Hotfix direto em `master` é uma rota futura, ainda não habilitada, e mesmo quando existir vai continuar exigindo aprovação de código humana prévia — não é bypass do processo, é uma variante dele.
+O agente sempre trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`master` diretamente no fluxo normal de spec; a promoção entre elas é responsabilidade da esteira de deploy. A exceção é hotfix: só por pedido humano direto, branch `hotfix/xxx` a partir de `master` — ver `docs/agents/esteira-deploy.md`.
 
 ## Onde cada skill entra
 
@@ -42,7 +40,7 @@ O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/
 
 **Review.** `/code-review` avalia o diff contra dois eixos independentes: os padrões do repo (estilo, arquitetura, `docs/adr/`) e a conformidade com a spec original (`to-spec`). Rodar antes de abrir a merge request, não depois. Se o diff tocar UI, rodar também `/skill:avoid-ai-design detect` (ver `docs/design/`) como segunda camada — a task de `ui` já deveria ter feito essa auditoria, mas isso confirma que nada passou batido.
 
-**Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida — configuração em `.gitlab-ci.yml` e nas proteções do projeto no GitLab), merge só após validação humana. Dali em diante a promoção pra `qa` → `hml` → `master` é responsabilidade da esteira de deploy, não de uma nova MR manual do agente. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
+**Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida), merge só após validação humana. Dali em diante, a esteira de deploy assume: promoção `dev → qa` é automática, `qa → hml` abre MR esperando aprovação humana, `hml → master` espera segunda aprovação humana — ver `docs/agents/esteira-deploy.md` para o fluxo completo, incluindo hotfix e rollback. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
 
 ## Skills de apoio (usar quando a situação pedir, fora da sequência linear)
 
@@ -56,6 +54,6 @@ O agente sempe trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/
 
 ## Onde isso conecta com os agentes de execução
 
-`/implement` é o ponto de handoff natural para os executores (Deepseek Flash / GPT-5.6 Luna via OpenCode ou pi.dev): a spec e o ticket já estão fechados antes de chegar aqui, então a etapa mecânica de TDD é onde o modelo mais barato entra. Claude Code permanece responsável por discovery, spec, tickets e review — a parte que exige julgamento.
+`/implement` é o ponto de handoff natural para os executores (Deepseek V4 Flash / GPT-5.6 Luna via pi.dev): a spec e o ticket já estão fechados antes de chegar aqui, então a etapa mecânica de TDD é onde entram. Claude Code permanece responsável por discovery, spec, tickets e review — a parte que exige julgamento.
 
-Detalhamento da arquitetura de agentes (pi.dev + subagents deepseek-flash/gpt-5.6-luna, um `pi` por spec, layout de 4 paineis no Alethe) fica em `docs/agents/orchestration.md`.
+Detalhamento da arquitetura de agentes (pi.dev + subagents, um `pi` por spec, execução paralela via Alethe) fica em `docs/agents/orchestration.md`.

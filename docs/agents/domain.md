@@ -1,6 +1,6 @@
 # Domain Docs
 
-Como as engineering skills devem consumir a documentação de domínio deste repo ao explorar o código.
+Como as engineering skills devem consumir a documentação de domínio deste repo.
 
 ## Antes de explorar, ler
 
