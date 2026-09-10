@@ -7,7 +7,7 @@ Projeto base pra todo novo workflow assistido por IA — stack-agnóstico no bac
 - **Configurar sua máquina** (pi.dev, Alethe, glab, autenticação, skills): `docs-human/comandos-para-rodar.md`.
 - **Ferramentas de design e onde gastar esforço/dinheiro**: `docs-human/ui-ux.md`.
 - **O que já foi decidido mas ainda não implementado**: `docs-human/pendencias.md`.
-- **O que já rodou de verdade** (comando por comando, com data e resultado): `docs-human/log-execucao.md`.
+- **Executar Agent configurador de enviroment**: `docs-human/log-execucao.md`.
 
 ## Estrutura do repo
 

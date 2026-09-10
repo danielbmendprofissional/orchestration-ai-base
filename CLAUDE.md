@@ -1,17 +1,17 @@
 # ai-base
 
-Projeto base para todo novo workflow assistido por IA — sem stack fixa de frontend/backend. O que fica fixo aqui é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request para branch protegida (validação humana).
+Projeto base para todo novo workflow assistido por IA — backend sem stack fixa; frontend fixo em Angular (ver seção abaixo). O que fica fixo aqui é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request para branch protegida (validação humana).
 
 ## Papéis fixos das ferramentas
 
 - **Claude Code**: pensar, arquitetar, montar specs/tasks, revisar, decidir. É quem roda as skills abaixo.
-- **Deepseek V4 Flash / GPT-5.6 Luna (via pi.dev)**: executar — implementar tickets já especificados, rodar TDD mecânico, tarefas repetitivas de baixo julgamento. Sem papel fixo por modelo (ver `docs/agents/orchestration.md`).
+- **Executores via pi.dev**: implementar tickets já especificados, rodar TDD mecânico, tarefas repetitivas de baixo julgamento. Sem papel fixo por modelo — ver `docs/agents/orchestration.md` para os modelos atualmente configurados (campo `model:` em `.pi/agents/*.md`, fonte única de verdade — não duplicar nomes de modelo aqui, eles trocam com mais frequência que este arquivo).
 
 ## Stack fixa de frontend
 
-**Angular** é a stack fixa pra todo site/aplicativo web enterprise/SaaS criado a partir deste template — não é mais uma decisão em aberto por projeto. React fica reservado só pra landing page isolada ou uso futuro pontual, quando a spec deixar isso explícito. Ver `docs/design/component-library.md` (PrimeNG como biblioteca de componentes default, skills oficiais do Angular) e `docs/design/principios.md` (cadeia `ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design` contra ai-slop).
+**Angular** é a stack fixa pra todo site/aplicativo web enterprise/SaaS criado a partir deste template. React fica reservado só pra landing page isolada ou uso futuro pontual, quando a spec deixar isso explícito. Backend não tem stack fixa. Ver `docs/design/component-library.md` (PrimeNG como biblioteca de componentes default, skills oficiais do Angular) e `docs/design/principios.md` (cadeia `ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design` contra ai-slop).
 
-Ver `docs/workflow.md` para o fluxo completo ponta a ponta, `docs/agents/orchestration.md` para como o pi.dev orquestra os subagents executores (data/backend/front/ui/tests/security/review), `docs/design/` para tokens/biblioteca de componentes/princípios anti-ai-slop, e `pratices/tokens/` para a configuração de economia de tokens.
+Ver `docs/workflow.md` para o fluxo completo ponta a ponta, `docs/agents/orchestration.md` para como o pi.dev orquestra os subagents executores (data/backend/front/ui/tests/security/review), `docs/design/` para tokens/biblioteca de componentes/princípios anti-ai-slop.
 
 ## Agent skills
 
@@ -19,15 +19,21 @@ Todas as skills em `.claude/skills/` têm `disable-model-invocation: true` — n
 
 ### Issue tracker
 
-Issues e specs vivem no GitLab, via GitLab MCP — a configurar por projeto, já que cada projeto criado a partir deste template aponta pro seu próprio repositório GitLab (este `ai-base` não é o repo de trabalho de ninguém, é só o template). Ver `docs/agents/issue-tracker.md` para o estado atual (hoje documenta o fallback manual via `glab`; a integração via MCP fica pendente de configuração quando um projeto real for criado).
+Issues e specs vivem no GitLab, via GitLab MCP quando configurado no projeto; fallback manual via `glab` documentado em `docs/agents/issue-tracker.md`. Configuração do MCP é por projeto — cada repositório instanciado a partir deste template aponta pro seu próprio GitLab.
+
+> **Nota de instanciação:** o parágrafo acima é genérico de propósito. Se este arquivo estiver sendo copiado do `ai-base` para um projeto real, não é preciso editar nada aqui — mas confira `docs/agents/issue-tracker.md` no projeto novo pra saber se o MCP já está configurado ou se ainda vale o fallback via `glab`.
 
 ### Triage labels
 
 Vocabulário padrão de 5 papéis (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). Ver `docs/agents/triage-labels.md`.
 
+### Segurança (skills de auditoria manual)
+
+Camadas de segurança além do checklist automático do subagent `security` (`.pi/agents/security.md`): skills do Claude Code (`security-review`, `owasp-audit`, `dependency-audit`, `secrets-audit`, entre outras) rodadas sob demanda, mais o scanner de infra (`Security-Scanner`/DefectDojo). Instalação em `docs-human/comandos-para-rodar.md`, passo 13; camadas e fluxo de correção de achado em `docs/agents/security-review.md`.
+
 ### Domain docs
 
-Layout single-context: `CONTEXT.md` + `docs/adr/` na raiz. Ver `docs/agents/domain.md`.
+`CONTEXT.md`/`CONTEXT-MAP.md` + `docs/adr/` — quantos contextos existem e onde cada um mora é decidido em conversa com o humano (via `/domain-modeling`), não uma estrutura fixa de pasta. Ver `docs/agents/domain.md`.
 
 ## Convenções de repo
 
@@ -38,7 +44,7 @@ feature-x → MR → dev → qa → hml → master
 ```
 
 - O agente sempre sobe o trabalho em `feature-x` e abre merge request pra `dev` — nunca commita direto em nenhuma das branches promovidas.
-- `dev`, `qa`, `hml` e `master` são todas protegidas. Promoção `dev → qa` é automática (merge por tag); `qa → hml` e `hml → master` passam por aprovação humana. Ver `docs/agents/esteira-deploy.md` pro fluxo completo.
+- `dev`, `qa`, `hml` e `master` são todas protegidas. Promoção `dev → qa` é feita por merge direto por tag (comando manual do agente-pai, sem Merge Request — não confundir com automação de CI); `qa → hml` e `hml → master` passam por Merge Request com aprovação humana. Ver `docs/agents/esteira-deploy.md` pro fluxo completo.
 - Hotfix direto em `master`: habilitado, mas só por pedido humano direto — branch `hotfix/xxx`, MR, aprovação humana. Não é bypass do processo, é rota de emergência com o mesmo gate de revisão. Ver `docs/agents/esteira-deploy.md`.
-- **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via skill `git-guardrails-claude-code`): bloqueia `git push` direto em `main`/`master`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal.
+- **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via skill `git-guardrails-claude-code`): bloqueia `git push` direto em `main`/`master`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal. Vale só pra sessão Claude Code — o `pi` (execução) segue a mesma regra por convenção, não por hook.
 - Specs e tickets seguem `docs/workflow.md`.

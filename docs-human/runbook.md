@@ -33,7 +33,15 @@ No `.gitlab-ci.yml` do projeto (herdado do template): confirmar que o include do
 
 Autenticar `glab` no runner se ainda não tiver feito (passo 5 de `comandos-para-rodar.md`).
 
-## 6. Primeiro ciclo de desenvolvimento (local, sem nuvem ainda)
+## 6. Gerar o design system real do projeto
+
+Antes da primeira task com fatia de UI — o `tokens.md` do template (`docs/design/tokens.md`) é só um seed, não a fonte de verdade final:
+
+1. Rodar a cadeia descrita em `docs/design/principios.md`: `ui-ux-pro-max-skill` pra direção inicial, depois `/impeccable init` pra gerar o `DESIGN.md`/`PRODUCT.md` reais do projeto, usando os valores de `docs/design/tokens.md` como seed consciente em vez de deixar a ferramenta partir do zero.
+2. Mapear os valores pro preset de tema do PrimeNG (`definePreset`, `@primeng/themes`) **e** pro `tailwind.config` do projeto, com os mesmos números dos dois lados (ver `docs/design/component-library.md`).
+3. Registrar no `CONTEXT.md` do projeto que os tokens vivem no `DESIGN.md`/preset dali pra frente — `docs/design/tokens.md` do template deixa de ser a fonte de verdade assim que isso acontecer.
+
+## 7. Primeiro ciclo de desenvolvimento (local, sem nuvem ainda)
 
 Nada abaixo precisa de Kubernetes nem AWS — roda tudo local:
 - Specs viram issues no GitLab (`docs/agents/issue-tracker.md`).
@@ -41,7 +49,7 @@ Nada abaixo precisa de Kubernetes nem AWS — roda tudo local:
 - `/code-review` manual (sua sessão Claude Code, seu Pro) antes de cada push de `feature/*`.
 - Esteira dev→qa→hml→master só entra em jogo quando você decidir publicar de verdade.
 
-## 7. Publicar pela primeira vez — só quando decidir ir pra nuvem
+## 8. Publicar pela primeira vez — só quando decidir ir pra nuvem
 
 Aqui entra o Kubernetes. Kit de bootstrap completo (comandos exatos) já registrado em `docs-human/pendencias.md`, seção Kubernetes:
 - A) Criar EC2 + instalar k3s.
@@ -51,6 +59,6 @@ Aqui entra o Kubernetes. Kit de bootstrap completo (comandos exatos) já registr
 
 Repete A→B→C→D pra cada cluster — 1 por projeto × ambiente (`qa`, `hml`, `master`), conforme Opção 3 decidida.
 
-## 8. Segurança (quando o `DefectDojo` já estiver rodando no `infra`)
+## 9. Segurança (quando o `DefectDojo` já estiver rodando no `infra`)
 
 Rodar o `Security-Scanner` contra o projeto, importar achados no DefectDojo via API (ver `docs-human/pendencias.md`, checklist do DefectDojo).

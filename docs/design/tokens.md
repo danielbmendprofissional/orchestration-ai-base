@@ -105,8 +105,6 @@ Não usar o mesmo raio/sombra em toda superfície por reflexo (P1 — no PrimeNG
 
 Padrão: nenhum, a menos que a task de `ui` justifique. Se precisar, usar `anime.js` (ou a API vanilla do `Motion`, ver `component-library.md`) e nunca o mesmo "fade-in-up" genérico em tudo (P2) — variar a transição conforme o contexto (entrada de modal ≠ hover de card ≠ toast).
 
-## Quando o projeto real nascer deste template
+---
 
-1. Rode a cadeia de `principios.md`: `ui-ux-pro-max-skill` pra direção inicial, depois `/impeccable init` pra gerar o `DESIGN.md`/`PRODUCT.md` reais do projeto, usando os valores acima como seed consciente em vez de deixar a ferramenta partir do zero.
-2. Mapeie os valores pro preset de tema do PrimeNG (`definePreset`, `@primeng/themes`) **e** pro `tailwind.config` do projeto, com os mesmos números dos dois lados.
-3. Registre no `CONTEXT.md` do projeto que os tokens vivem no `DESIGN.md`/preset dali pra frente — este `tokens.md` do template deixa de ser a fonte de verdade assim que o projeto real tiver a sua própria.
+Este arquivo deixa de ser a fonte de verdade assim que o `DESIGN.md` do projeto real existir (ver primeiro parágrafo). A sequência de como isso acontece — rodar a cadeia de `principios.md`, gerar o `DESIGN.md`, mapear pro tema/`tailwind.config`, registrar a virada no `CONTEXT.md` — é passo do nascimento do projeto, não deste arquivo: ver `docs-human/runbook.md`.

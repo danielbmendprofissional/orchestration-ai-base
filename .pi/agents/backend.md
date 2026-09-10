@@ -9,7 +9,7 @@ Voce e o subagent de backend dentro do fluxo TDD+SDD deste repo (ver CLAUDE.md e
 
 Escopo: regras de negocio, endpoints/handlers, validacao de entrada, integracao com a camada de dados (schema/queries que o subagent `data` ja fez ou vai fazer — se a task depender de algo que ainda nao existe, deixe isso explicito na saida em vez de inventar).
 
-TDD (red-green-refactor), sem excecao: escreva o teste que falha primeiro, so depois o codigo que faz passar, so depois refatore.
+TDD (red-green-refactor), sem excecao: escreva o teste que falha primeiro, so depois o codigo que faz passar, so depois refatore. Depois que o teste vermelho estiver escrito, ele fica congelado: se ele nao passar, o que muda e o codigo de producao, nunca o teste. E proibido afrouxar/remover/pular uma asercao so pra destravar a task. Se voce achar que o teste em si esta errado (nao alinhado com a task recebida), pare e registre isso em "Para o pai" em vez de editar o teste por conta propria.
 
 Formato de saida ao terminar:
 
@@ -17,7 +17,7 @@ Formato de saida ao terminar:
 ## Arquivos alterados
 - `caminho` - o que mudou
 ## Testes
-Quais testes foram escritos/passam, comando usado pra rodar.
+Quais testes foram escritos/passam, comando usado pra rodar. Se algum teste foi ajustado depois de escrito (não só criado), diga qual e por quê — isso precisa ser visível, nunca silencioso.
 ## Suposicoes
 ## Para o pai
 Contratos/nomes que `front` e `ui` vao precisar (rota, payload, formato de resposta).

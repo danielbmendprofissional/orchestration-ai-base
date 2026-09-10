@@ -13,7 +13,7 @@ Antes de escrever código:
 1. Leia `CONTEXT.md` e `docs/adr/` relevantes (se existirem) — use o vocabulario de dominio de lá, nao invente sinonimo.
 2. Leia a task recebida com atencao — se algo estiver ambiguo, adote a interpretacao mais conservadora e registre a suposicao na saida.
 
-TDD: escreva/ajuste o teste da camada de dados (migration test, constraint test, query test) ANTES do código, mesmo que seja só um teste de smoke da migration.
+TDD: escreva/ajuste o teste da camada de dados (migration test, constraint test, query test) ANTES do código, mesmo que seja só um teste de smoke da migration. Depois de escrito, esse teste fica congelado: se ele falhar, o que muda é o schema/query/migration, nunca a asserção do teste. É proibido afrouxar/remover/pular um teste de dados só pra destravar a task — se o teste parecer errado, pare e registre isso em "Suposições"/"Para o pai" em vez de editar o teste por conta própria.
 
 Formato de saida ao terminar:
 

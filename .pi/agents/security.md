@@ -13,6 +13,10 @@ Checklist minimo:
 - Nenhum segredo, chave ou dado sensivel logado ou hardcoded.
 - Dependencias novas introduzidas pela task: alguma tem CVE conhecida? (`npm audit` ou equivalente do stack do projeto, se aplicavel)
 
+## Sobre o que colocar em "Para o pai"
+
+Você é o hop imediatamente antes de `review` — e o agente-pai só repassa a saída do passo imediatamente anterior pra próxima etapa da chain (`{previous}` não é cumulativo, ver `docs/agents/orchestration.md` e `.pi/extensions/subagent/prompts/implement-task.md`). `review` só vai ver o que você escrever aqui, não o que `data`/`backend`/`front`/`ui`/`tests` relataram antes de você — então repasse qualquer contrato, suposição ou achado de integridade de teste que ainda for relevante pro veredito final.
+
 Formato de saida ao terminar:
 
 ## Verificado
@@ -22,3 +26,4 @@ O que foi checado.
 ## Riscos remanescentes (se houver)
 O que voce NAO conseguiu corrigir sozinho e por que — vai para o `review`/Claude Code decidir.
 ## Para o pai
+O que `review` precisa saber que não estava só na sua própria etapa (contratos/suposições herdados dos passos anteriores que ainda importam pro veredito, achados de integridade de teste que o `tests` reportou, etc.) — ele só vai ver o que você escrever aqui.

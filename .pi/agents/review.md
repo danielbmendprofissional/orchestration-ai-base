@@ -13,6 +13,7 @@ Estrategia:
 1. `git diff` pra ver tudo que mudou nesta spec/task.
 2. Ler os arquivos modificados.
 3. Conferir contra a spec original (se voce tiver acesso a ela) e contra os padroes do repo (`docs/adr/`, `CONTEXT.md`).
+4. Conferir especificamente o `git diff`/`git log` dos arquivos de teste: alguma asserção foi afrouxada, removida, comentada ou pulada (`skip`/`xit`/`it.todo`) entre o commit em que o teste nasceu vermelho e o commit em que passou a passar, sem isso estar coberto pela spec? Isso é sempre Crítico — teste alterado pra facilitar a própria implementação passar não é uma implementação concluída, é um teste que parou de testar o que devia.
 
 Formato de saida ao terminar:
 
@@ -23,5 +24,7 @@ Formato de saida ao terminar:
 ## Avisos (deveria corrigir)
 - `arquivo:linha` - descricao
 ## Sugestoes
+## Integridade dos testes
+O que o item 4 encontrou — se nada suspeito, diga isso explicitamente (não deixe em branco/omitido).
 ## Veredito
 PASS ou FAIL — se FAIL, o agente pai deve reabrir a task com o subagent responsavel antes de subir a branch.

@@ -257,6 +257,41 @@ Guarda a senha gerada em cada passo do jeito que você já guarda as outras (nã
 
 Se você tiver Google AI Plus, já vem com 2TB — dump de Postgres pessoal não chega perto de encostar nesse limite. Sem o plano pago, o grátis (15GB) também é suficiente.
 
+## 13. Skills de segurança — auditoria manual (Claude Code)
+
+Pra rodar por sua conta, quando quiser auditar um projeto — não fazem parte automática de nenhum ticket (ver `docs/agents/security-review.md` pro fluxo completo: as camadas, e o que fazer quando um achado aparece).
+
+**Terminal: "PowerShell" (normal)**, dentro do repo do projeto que você quer auditar (não precisa ser dentro do `ai-base`):
+
+**Núcleo — instala uma vez, roda contra qualquer projeto:**
+
+```powershell
+npx skills add getsentry/skills -s 'security-review,gha-security-review,skill-scanner' -a claude-code -y
+npx skills add briiirussell/cybersecurity-skills -s 'owasp-audit,api-audit,dependency-audit,secrets-audit,crypto-audit' -a claude-code -y
+```
+
+**Atenção pro `-s` seletivo, não "Select All":** o `getsentry/skills` tem 27 skills no total, incluindo `code-review`, `commit`, `pr-writer`, `find-bugs` — essas colidem/duplicam com o `/code-review` que já vem do `mattpocock/skills` (passo 8) e é o que `docs/workflow.md` usa oficialmente. "Select All" nesse repo especificamente instalaria um segundo `/code-review` concorrente sem querer. Instale só as skills de segurança listadas acima. `django-access-review` eu deixei de fora do comando — só instale se o projeto realmente for Django (não é o caso do `valuto`, que é .NET).
+
+**Depois de instalar, confirme o `disable-model-invocation`:** nenhum dos dois repositórios de origem documenta esse campo no `SKILL.md` de cada skill (diferente do que o `CLAUDE.md` do `ai-base` promete pra tudo que está em `.claude/skills/`). Abra o `SKILL.md` de cada skill instalada (`.claude/skills/<nome>/SKILL.md`) e confirme/adicione `disable-model-invocation: true` no frontmatter — senão essa skill pode disparar sozinha por bater com o contexto, quebrando a garantia que o resto do repo depende.
+
+**Situacional — só instala quando o projeto real tiver aquele escopo regulatório específico** (a maioria não tem nenhum destes; decisão de nascimento de projeto, ver `docs-human/runbook.md`):
+
+```powershell
+npx skills add briiirussell/cybersecurity-skills -s 'privacy-engineering' -a claude-code -y   # GDPR/CCPA/CPRA
+npx skills add briiirussell/cybersecurity-skills -s 'hipaa-audit' -a claude-code -y            # saúde, dado clínico
+npx skills add briiirussell/cybersecurity-skills -s 'pci-audit' -a claude-code -y              # cartão/pagamento
+npx skills add briiirussell/cybersecurity-skills -s 'csf-mapping' -a claude-code -y            # postura NIST CSF 2.0
+npx skills add briiirussell/cybersecurity-skills -s 'ai-risk-management' -a claude-code -y     # produto com IA embarcada
+```
+
+Depois de qualquer um desses comandos, confirme dentro de uma sessão Claude Code:
+
+```
+/skills
+```
+
+Deve listar as skills instaladas.
+
 ## O que eu NÃO coloquei aqui
 
 `git push` continua proibido até você aprovar o que já foi commitado (`git log --oneline` mostra os commits locais). Nenhum comando desta lista dá push em nada.

@@ -19,6 +19,10 @@ Ao terminar a implementação:
 1. Se o projeto ja tiver `impeccable` instalado e uma instancia local rodando: rode `/impeccable detect` contra o localhost, resolva os achados com `/impeccable adapt|harden|polish` conforme o caso, e feche com `/impeccable audit` de confirmacao.
 2. Sempre, independente do item 1: rode a skill `avoid-ai-design` em modo `detect` sobre o que você mudou (`/skill:avoid-ai-design detect`, disponível nesta sessão via `.pi/settings.json`) antes de devolver a task. Se aparecer qualquer achado P0, corrija você mesmo antes de reportar — não empurre isso pro `review` nem pro Claude Code depois.
 
+## Sobre o que colocar em "Para o pai"
+
+Você é o hop imediatamente antes de `tests` — e o agente-pai só repassa a saída do passo imediatamente anterior pra próxima etapa da chain (`{previous}` não é cumulativo, ver `docs/agents/orchestration.md` e `.pi/extensions/subagent/prompts/implement-task.md`). `tests` só vai ver o que você escrever aqui, não o que `data`/`backend`/`front` relataram antes de você — então repasse qualquer contrato ou suposição herdada que ainda for relevante pra cobertura de teste, além do que já é específico da sua própria fatia.
+
 Formato de saida ao terminar:
 
 ## Completado
@@ -30,3 +34,4 @@ O que foi verificado (labels, contraste, navegacao por teclado — inclusive ARI
 Resultado do `/impeccable detect`/`audit` (se rodou) e do `/skill:avoid-ai-design detect` — o que foi encontrado e o que foi corrigido antes de reportar.
 ## Suposicoes
 ## Para o pai
+O que `tests` precisa saber que não estava só na sua própria etapa (componentes/estados que você criou e que precisam de cobertura, contratos herdados de `data`/`backend`/`front` que ainda importam) — ele só vai ver o que você escrever aqui.
