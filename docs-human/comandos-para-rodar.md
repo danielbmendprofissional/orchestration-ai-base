@@ -33,6 +33,14 @@ pi --version
 
 Precisa mostrar um número de versão (ex: `0.85.1` ou mais novo).
 
+Depois de `pi --version` confirmar que instalou:
+ 
+```powershell
+pi install npm:pi-mcp-adapter
+```
+ 
+Reinicia o `pi` depois de instalar. Isso é o que faz o `pi` ler o `.mcp.json` de cada projeto (trechos prontos em `configs/desktop/MCP-GLOBAL.md`) — sem essa extensão, `pi` não enxerga MCP nenhum, `/mcp` nem aparece como comando.
+
 ---
 
 ## 3. Autenticar Deepseek e GPT-5.6 Luna
