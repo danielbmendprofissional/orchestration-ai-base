@@ -17,7 +17,7 @@ Skills mantidas pelo time do Angular (`github.com/angular/skills`), instaladas v
 - **`angular-developer`** — geração de código e orientação arquitetural: componentes standalone, signals, forms, injeção de dependência, roteamento, SSR, acessibilidade (ARIA), animações, estilo, testes, CLI. Fonte de verdade de convenção de código Angular pras tasks `front` e `ui`, acima de qualquer hábito antigo (NgModules, RxJS-first sem necessidade).
 - **`angular-new-app`** — bootstrap de projeto novo via Angular CLI com estrutura moderna recomendada.
 
-Comandos de instalação reais (PrimeNG + Tailwind) em `docs-human/comandos-para-rodar.md` — rodam por projeto, não dentro do `ai-base`.
+Instalação real (PrimeNG + Tailwind) roda por projeto, na configuração de ambiente daquele projeto — não faz parte do `ai-base` em si.
 
 ### Se o caso for React (landing page isolada ou uso futuro)
 

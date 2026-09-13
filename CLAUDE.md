@@ -29,7 +29,7 @@ Vocabulário padrão de 5 papéis (`needs-triage`, `needs-info`, `ready-for-agen
 
 ### Segurança (skills de auditoria manual)
 
-Camadas de segurança além do checklist automático do subagent `security` (`.pi/agents/security.md`): skills do Claude Code (`security-review`, `owasp-audit`, `dependency-audit`, `secrets-audit`, entre outras) rodadas sob demanda, mais o scanner de infra (`Security-Scanner`/DefectDojo). Instalação em `docs-human/comandos-para-rodar.md`, passo 13; camadas e fluxo de correção de achado em `docs/agents/security-review.md`.
+Camadas de segurança além do checklist automático do subagent `security` (`.pi/agents/security.md`): skills do Claude Code (`security-review`, `owasp-audit`, `dependency-audit`, `secrets-audit`, entre outras) rodadas sob demanda, mais o scanner de infra (`Security-Scanner`/DefectDojo). Instalação é setup de projeto, fora deste repo; camadas e fluxo de correção de achado em `docs/agents/security-review.md`.
 
 ### Domain docs
 

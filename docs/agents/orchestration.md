@@ -4,7 +4,7 @@ Camada de execução, dentro do passo `/implement` de `docs/workflow.md`: Claude
 
 Não existe agente-pai fixo além do próprio processo `pi` — cada CLI `pi` aberta (uma por spec) é o agente-pai daquela spec, orquestrando os subagents via a tool `task`.
 
-Economia de tokens: RTK ligado (se o `pi` suportar — ver `pratices/tokens/caveman-rtk.md`). Caveman nunca — exclusivo de sessões Claude Code.
+Economia de tokens: RTK ligado, quando disponível na máquina (instalação/configuração é setup de máquina, fora deste repo). Caveman nunca — exclusivo de sessões Claude Code.
 
 ## Subagents (`.pi/agents/*.md`)
 
@@ -22,4 +22,4 @@ O push em `feature/*` dispara um stage `verify-code-review` no GitLab CI: só ba
 
 ## Execução paralela
 
-Múltiplas specs rodam em sessões `pi` paralelas, uma branch de feature por spec (via Alethe — instalação/uso em `docs-human/comandos-para-rodar.md`).
+Múltiplas specs rodam em sessões `pi` paralelas, uma branch de feature por spec (via Alethe — instalação/uso é setup de máquina, fora deste repo).

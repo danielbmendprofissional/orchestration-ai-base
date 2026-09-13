@@ -13,7 +13,11 @@ Todo projeto novo ganha, na mesma infra compartilhada:
 - **Postgres:** 1 banco `<projeto>` dedicado (nunca reaproveita banco de outro projeto). Organização interna do banco é decisão do projeto.
 - **RabbitMQ:** 1 vhost `<projeto>` dedicado.
 - **Keycloak:** 1 realm `<projeto>` dedicado.
-- **Redis:** 1 ACL user `<projeto>` restrito a `<projeto>:*` (ver comando em `docs-human/comandos-para-rodar.md`).
+- **Redis:** 1 ACL user `<projeto>` restrito a `<projeto>:*`:
+  ```powershell
+  docker exec -it <container-redis> redis-cli ACL SETUSER <projeto> on ">senha-do-projeto" "~<projeto>:*" "+@all" "-@dangerous"
+  ```
+  (senha gerada na hora, nunca hardcoded — avisar onde ficou guardada, nunca o valor em texto).
 
 Cada projeto novo ganha seu próprio `banco/<projeto>/init-db.sql` dentro do repo `infra`, sem sobrescrever os existentes.
 
@@ -22,7 +26,7 @@ Cada projeto novo ganha seu próprio `banco/<projeto>/init-db.sql` dentro do rep
 - **Secrets:** Kubernetes Secrets nativo pra começar; evoluir pra HashiCorp Vault self-hosted (dentro do `infra`) só se rotação/auditoria justificar depois. Nunca AWS Secrets Manager.
 - **Registry de imagem e pacote:** GitLab Container Registry / GitLab Package Registry, não ECR.
 - **Mensageria em produção:** RabbitMQ self-hosted, mesmo broker de dev — não Amazon MQ.
-- Deploy roda em Kubernetes (provisionamento em `docs-human/infra.md` — não muda como o código é escrito).
+- Deploy roda em Kubernetes de produção — provisionamento é sempre manual do humano (fora de escopo de qualquer agent), e não muda como o código é escrito.
 
 ## Observabilidade e backup
 

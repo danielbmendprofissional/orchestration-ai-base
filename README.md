@@ -4,18 +4,40 @@ Projeto base pra todo novo workflow assistido por IA — stack-agnóstico no bac
 
 ## Por onde começar
 
-- **Configurar sua máquina** (pi.dev, Alethe, glab, autenticação, skills): `docs-human/comandos-para-rodar.md`.
-- **Ferramentas de design e onde gastar esforço/dinheiro**: `docs-human/ui-ux.md`.
-- **O que já foi decidido mas ainda não implementado**: `docs-human/pendencias.md`.
-- **Executar Agent configurador de enviroment**: `docs-human/log-execucao.md`.
+- Ideal utilizar o agent de infra do `ai-ops` (`local-environment-config`) pra configuração de máquina e configuração inicial de projeto; depois, com tudo configurado, inicia o workflow com o Claude Code.
 
 ## Estrutura do repo
 
 - `CLAUDE.md` — instruções de projeto pro Claude Code.
+- `README.md` — este arquivo.
 - `docs/workflow.md` — o pipeline completo, discovery → esteira de deploy.
-- `docs/agents/` — configuração de skills (issue tracker, labels de triagem, docs de domínio), orquestração de execução (`orchestration.md`), esteira de deploy (`esteira-deploy.md`), infra compartilhada (`infra-local.md`), observabilidade e backup.
-- `docs/design/` — stack de UI fixa (Angular + PrimeNG + Tailwind), cadeia anti-ai-slop (`principios.md`), tokens de design (`tokens.md`), catálogo de referência (`referencias.md`).
+
+### `docs/agents/` — skills e regras de execução
+
+- `orchestration.md` — orquestração `pi.dev` + Alethe (subagents `data`/`backend`/`front`/`ui`/`tests`/`security`/`review`, execução paralela).
+- `esteira-deploy.md` — promoção de branch `dev → qa → hml → master`, hotfix.
+- `infra-local.md` — modelo de infra compartilhada (Postgres/Redis/RabbitMQ/Keycloak), o que todo projeto novo ganha nela, e as diferenças pra produção (AWS).
+- `observabilidade-backup.md` — `/health`, `/metrics`, log JSON, backup de Postgres.
+- `security-review.md` — camadas de segurança, skills de auditoria manual, fluxo de correção de achado.
+- `issue-tracker.md` — GitLab MCP / fallback `glab` pra issues e specs.
+- `triage-labels.md` — vocabulário fixo de labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`).
+- `domain.md` — como `/domain-modeling` decide contextos, `CONTEXT.md`/`CONTEXT-MAP.md`, ADRs.
+
+### `docs/design/` — stack de UI fixa (Angular + PrimeNG + Tailwind)
+
+- `component-library.md` — biblioteca de componentes por stack, motion, regra de tema custom obrigatório.
+- `tokens.md` — tokens de design (cor, tipografia, espaçamento, raio/sombra, movimento) como ponto de partida pro `DESIGN.md` gerado por `impeccable`.
+- `principios.md` — cadeia anti-ai-slop (`ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design`).
+- `referencias.md` — catálogo de sites de referência visual (Aceternity UI, 21st.dev, bklit UI) e o papel de cada um.
+
+### `docs/adr/`
+
+Vazio por padrão — cada projeto real registra suas próprias decisões de arquitetura aqui conforme nascem, não é pré-populado pelo template.
+
+### Fora de `docs/`
+
 - `.claude/skills/` — **não versionado** (ver `.gitignore`): skills reinstaláveis por comando, não commitadas. `skills-lock.json` (esse sim versionado) registra origem e hash de cada uma, pra reinstalar de forma reprodutível.
 - `.claude/hooks/` — guardrail de git (bloqueia push direto em branch protegida, force push, reset hard, etc — só vale pra sessão Claude Code).
 - `.pi/` — camada de execução: subagents de papel (data, backend, front, ui, tests, security, review) rodando via pi.dev.
-- `pratices/tokens/` — configuração de economia de token.
+- `.mcp.json` — MCP do projeto (bloco GitLab sempre, GitHub sob demanda), sempre `"disabled": true`.
+- `.gitlab-ci.yml` — pipeline de CI (stage `verify-code-review`, promoção por tag).
