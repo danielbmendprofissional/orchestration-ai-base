@@ -6,16 +6,16 @@ Este repo já tem segurança em duas camadas que não se sobrepõem por acaso �
 
 **1. `.pi/agents/security.md` — automática, todo ticket, barata.** Roda dentro de `/implement-task`, sem supervisão humana, checklist mecânico (entrada validada, auth, segredo hardcoded, CVE de dependência nova). Modelo `deepseek/gpt` via `pi.dev` — **não tem acesso a nenhuma skill do Claude Code**, são runtimes diferentes. Nenhuma skill deste arquivo pode ser chamada por ele.
 
-**2. Skills de auditoria do Claude Code — sob demanda, mais profundas.** Instalação e comandos exatos em `docs-human/comandos-para-rodar.md`, passo 13. Dois grupos:
+**2. Skills de auditoria do Claude Code — sob demanda, mais profundas.** Instalação e comandos exatos são setup de projeto, fora deste repo. Dois grupos:
 
 - **Núcleo, roda contra qualquer projeto:** `security-review` e `skill-scanner` (`getsentry/skills`); `owasp-audit`, `api-audit`, `dependency-audit`, `secrets-audit`, `crypto-audit` (`briiirussell/cybersecurity-skills`). Aprofundam exatamente o que o `.pi/agents/security.md` já checa de forma barata — mesmo padrão do `avoid-ai-design` ser "segunda rede de segurança" depois do `impeccable` (`docs/design/principios.md`).
-- **Situacional, só quando o projeto real tiver aquele escopo regulatório:** `privacy-engineering`, `hipaa-audit`, `pci-audit`, `csf-mapping`, `ai-risk-management` (`briiirussell/cybersecurity-skills`). Decisão de nascimento de projeto (`docs-human/runbook.md`), não regra fixa do `ai-base` — a maioria dos projetos não precisa de nenhuma delas.
+- **Situacional, só quando o projeto real tiver aquele escopo regulatório:** `privacy-engineering`, `hipaa-audit`, `pci-audit`, `csf-mapping`, `ai-risk-management` (`briiirussell/cybersecurity-skills`). Decisão de nascimento de projeto, não regra fixa do `ai-base` — a maioria dos projetos não precisa de nenhuma delas.
 
 **Onde entram no `/code-review` (`docs/workflow.md`):** se a task tocar superfície sensível (auth, dado de usuário, dependência nova, segredo), rodar `security-review`/`owasp-audit`/`dependency-audit`/`secrets-audit` como segunda camada antes de abrir a MR — mesma lógica condicional do `avoid-ai-design` pra UI.
 
 **Periódico, não por ticket:** `skill-scanner` (varre as skills instaladas em `.claude/skills/`), `crypto-audit`, `mobile-audit` (se o projeto tiver app mobile) — mesmo padrão do `/improve-codebase-architecture`.
 
-**3. DefectDojo + `Security-Scanner` — infra, fora do fluxo de spec.** Scanner por assinatura (Trivy/Opengrep/Checkov/BetterLeaks/ZAP), achados importados num dashboard, roda independente de qualquer ticket (ver `docs-human/pendencias.md`). Não substitui a camada 2 — pega classe diferente de problema (SAST/dependência/container/DAST por ferramenta, não revisão semântica por IA).
+**3. DefectDojo + `Security-Scanner` — infra, fora do fluxo de spec.** Scanner por assinatura (Trivy/Opengrep/Checkov/BetterLeaks/ZAP), achados importados num dashboard, roda independente de qualquer ticket. Não substitui a camada 2 — pega classe diferente de problema (SAST/dependência/container/DAST por ferramenta, não revisão semântica por IA).
 
 ## Fluxo: você roda uma auditoria manual e encontra um achado
 
