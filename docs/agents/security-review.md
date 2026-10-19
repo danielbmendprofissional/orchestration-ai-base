@@ -4,7 +4,7 @@ Este repo já tem segurança em duas camadas que não se sobrepõem por acaso �
 
 ## As camadas
 
-**1. `.pi/agents/security.md` — automática, todo ticket, barata.** Roda dentro de `/implement-task`, sem supervisão humana, checklist mecânico (entrada validada, auth, segredo hardcoded, CVE de dependência nova). Modelo `deepseek/gpt` via `pi.dev` — **não tem acesso a nenhuma skill do Claude Code**, são runtimes diferentes. Nenhuma skill deste arquivo pode ser chamada por ele.
+**1. `.pi/agents/security.md` — automática, todo ticket, barata.** Roda dentro de `/implement-task`, sem supervisão humana, checklist mecânico (entrada validada, auth, segredo hardcoded, CVE de dependência nova). Modelo do combo `omniroute/pi-quality` via `pi.dev` — **não tem acesso a nenhuma skill do Claude Code**, são runtimes diferentes. Nenhuma skill deste arquivo pode ser chamada por ele.
 
 **2. Skills de auditoria do Claude Code — sob demanda, mais profundas.** Instalação e comandos exatos são setup de projeto, fora deste repo. Dois grupos:
 

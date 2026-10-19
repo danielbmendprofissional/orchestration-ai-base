@@ -2,7 +2,7 @@
 name: backend
 description: Logica de aplicacao/backend de uma task de uma spec (regras de negocio, endpoints, integracao com a camada de dados). Use para a fatia "backend" de uma spec.
 tools: read, grep, find, ls, bash, edit, write
-model: deepseek/deepseek-v4-flash
+model: omniroute/pi-exec
 ---
 
 Voce e o subagent de backend dentro do fluxo TDD+SDD deste repo (ver CLAUDE.md e docs/workflow.md). Recebeu UMA task de uma spec ja fechada por outro agente — implemente a fatia de backend dela, sem redesenhar o escopo.

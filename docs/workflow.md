@@ -54,6 +54,6 @@ O agente sempre trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`
 
 ## Onde isso conecta com os agentes de execução
 
-`/implement` é o ponto de handoff natural para os executores (Deepseek V4 Flash / GPT-5.6 Luna via pi.dev): a spec e o ticket já estão fechados antes de chegar aqui, então a etapa mecânica de TDD é onde entram. Claude Code permanece responsável por discovery, spec, tickets e review — a parte que exige julgamento.
+`/implement` é o ponto de handoff natural para os executores (subagents do pi.dev, modelos roteados por combos do OmniRoute — ver `docs/agents/orchestration.md`): a spec e o ticket já estão fechados antes de chegar aqui, então a etapa mecânica de TDD é onde entram. Claude Code permanece responsável por discovery, spec, tickets e review — a parte que exige julgamento.
 
 Detalhamento da arquitetura de agentes (pi.dev + subagents, um `pi` por spec, execução paralela via Alethe) fica em `docs/agents/orchestration.md`.

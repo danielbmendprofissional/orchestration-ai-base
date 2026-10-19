@@ -4,11 +4,25 @@ Camada de execução, dentro do passo `/implement` de `docs/workflow.md`: Claude
 
 Não existe agente-pai fixo além do próprio processo `pi` — cada CLI `pi` aberta (uma por spec) é o agente-pai daquela spec, orquestrando os subagents via a tool `task`.
 
-Economia de tokens: RTK ligado, quando disponível na máquina (instalação/configuração é setup de máquina, fora deste repo). Caveman nunca — exclusivo de sessões Claude Code.
+Economia de tokens: RTK ligado, quando disponível na máquina (instalação/configuração é setup de máquina, fora deste repo). Caveman nunca — exclusivo de sessões Claude Code (inclusive desligado na compressão do OmniRoute).
+
+## Roteamento de modelos: OmniRoute
+
+O `pi` não chama provider nenhum direto: todo subagent aponta pra um **combo** do OmniRoute (gateway OpenAI-compatible local, serviço do repo `infra`, provider `omniroute` no `pi`). O combo decide o modelo real — free primeiro, failover entre providers quando um dá 429, pago (DeepSeek/OpenAI) só como último recurso. Trocar de modelo é mudança no combo, não neste repo.
+
+| Combo | Papéis | Perfil |
+|---|---|---|
+| `omniroute/pi-exec` | `data`, `backend`, `front`, `ui`, `tests` | pool de modelos free fortes em tool calling → DeepSeek pago por último |
+| `omniroute/pi-light` | `qa` | modelos free rápidos, sem pago |
+| `omniroute/pi-quality` | `review`, `security` | pago primeiro (GPT Luna → DeepSeek), free só se os dois falharem |
+
+Consequência prática: o modelo que escreveu uma task pode variar entre execuções. Isso é aceito porque a qualidade é garantida pelos gates, não pelo modelo: teste vermelho congelado, `review` no `pi-quality`, `/code-review` do Claude Code antes da MR. Se uma task falhar repetidamente no `review`, o agente-pai reporta — não fica re-tentando até cair num modelo que passe.
+
+OmniRoute fora do ar = `pi` sem modelo. Contingência manual: trocar o `model:` do subagent pra um provider direto (`deepseek/deepseek-v4-flash`) só na sessão local, sem commitar.
 
 ## Subagents (`.pi/agents/*.md`)
 
-7 papéis: `data`, `backend`, `front`, `ui`, `tests`, `security`, `review`. Sem papel fixo de modelo — qualquer um pode rodar em `deepseek/deepseek-v4-flash` ou `openai/gpt-5.6-luna`, campo `model:` de cada arquivo controla isso.
+8 papéis: 7 na chain do `/implement-task` (`data`, `backend`, `front`, `ui`, `tests`, `security`, `review`) + `qa`, que roda fora da chain, depois que a esteira promove `dev → qa` (ver `docs/agents/esteira-deploy.md`). O campo `model:` de cada arquivo aponta pro combo do OmniRoute daquele papel (tabela acima).
 
 Comando `/implement-task <descrição>` encadeia os 7 papéis, pulando os que não se aplicam — nunca pula `tests`/`security`/`review`.
 
