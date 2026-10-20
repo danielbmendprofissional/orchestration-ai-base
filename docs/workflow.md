@@ -21,10 +21,12 @@ merge request → dev (branch protegida) → validação humana
         ↓
 quando todas as specs da rodada estiverem em dev: agente-pai cria a tag vX.Y.Z-rcN
         ↓
-esteira de deploy por tag (ver docs/agents/esteira-deploy.md): dev → qa (merge automático) → agente de QA testa → MR qa→hml (aprovação humana) → hml publicado (segunda aprovação humana) → merge master
+esteira de deploy por tag (ver docs/agents/esteira-deploy.md): dev → qa (merge automático) → agente de QA testa → MR qa→hml (aprovação humana) → hml publicado (segunda aprovação humana) → MR hml→main + tag final vX.Y.Z (humano)
 ```
 
-O agente sempre trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`master` diretamente no fluxo normal de spec; a promoção entre elas é responsabilidade da esteira de deploy. A exceção é hotfix: só por pedido humano direto, branch `hotfix/xxx` a partir de `master` — ver `docs/agents/esteira-deploy.md`.
+Commit, MR, tag e esteira acontecem em cada repositório de código que a issue tocou (`<projeto>-api`, `<projeto>-frontend`); issue e spec ficam no workspace — ver `docs/agents/workspace.md`.
+
+O agente sempre trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`/`hml`/`main` diretamente no fluxo normal de spec; a promoção entre elas é responsabilidade da esteira de deploy. A exceção é hotfix: só por pedido humano direto, branch `hotfix/xxx` a partir de `main` — ver `docs/agents/esteira-deploy.md`.
 
 ## Onde cada skill entra
 
@@ -40,7 +42,7 @@ O agente sempre trabalha em `feature-x` e abre a MR pra `dev` — nunca pra `qa`
 
 **Review.** `/code-review` avalia o diff contra dois eixos independentes: os padrões do repo (estilo, arquitetura, `docs/adr/`) e a conformidade com a spec original (`to-spec`). Isso inclui olhar o diff do próprio arquivo de teste, não só da implementação: uma asserção enfraquecida, removida ou desativada entre a versão vermelha e a versão que passa, sem isso estar coberto pela spec, é bloqueante — mesmo critério que os subagents `tests`/`review` já aplicam durante `/implement-task`, só que como segunda camada. Rodar antes de abrir a merge request, não depois. Se o diff tocar UI, rodar também `/skill:avoid-ai-design detect` (ver `docs/design/`) como segunda camada — a task de `ui` já deveria ter feito essa auditoria, mas isso confirma que nada passou batido. Mesma lógica se o diff tocar superfície sensível (auth, dado de usuário, dependência nova, segredo): rodar as skills de segurança relevantes (`security-review`/`owasp-audit`/`dependency-audit`/`secrets-audit`, ver `docs/agents/security-review.md`) como segunda camada sobre o que o subagent `security` já checou de forma mecânica.
 
-**Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida), merge só após validação humana. Dali em diante, a esteira de deploy assume: promoção `dev → qa` é automática, `qa → hml` abre MR esperando aprovação humana, `hml → master` espera segunda aprovação humana — ver `docs/agents/esteira-deploy.md` para o fluxo completo, incluindo hotfix e rollback. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
+**Commit → Merge Request → dev.** Commit granular, MR contra `dev` (branch protegida), merge só após validação humana. Dali em diante, a esteira de deploy assume: promoção `dev → qa` é automática, `qa → hml` abre MR esperando aprovação humana, `hml → main` espera segunda aprovação humana — ver `docs/agents/esteira-deploy.md` para o fluxo completo, incluindo hotfix e rollback. Ver `docs/agents/issue-tracker.md` para os comandos `glab mr ...`.
 
 ## Skills de apoio (usar quando a situação pedir, fora da sequência linear)
 

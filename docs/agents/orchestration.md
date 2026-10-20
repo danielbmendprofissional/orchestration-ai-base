@@ -8,7 +8,7 @@ Economia de tokens: RTK ligado, quando disponível na máquina (instalação/con
 
 ## Roteamento de modelos: OmniRoute
 
-O `pi` não chama provider nenhum direto: todo subagent aponta pra um **combo** do OmniRoute (gateway OpenAI-compatible local, serviço do repo `infra`, provider `omniroute` no `pi`). O combo decide o modelo real — free primeiro, failover entre providers quando um dá 429, pago (DeepSeek/OpenAI) só como último recurso. Trocar de modelo é mudança no combo, não neste repo.
+O `pi` não chama provider nenhum direto: todo subagent aponta pra um **combo** do OmniRoute (gateway OpenAI-compatible local, serviço do repo `ai-infra`, provider `omniroute` no `pi`). O combo decide o modelo real — free primeiro, failover entre providers quando um dá 429, pago (DeepSeek/OpenAI) só como último recurso. Trocar de modelo é mudança no combo, não neste repo.
 
 | Combo | Papéis | Perfil |
 |---|---|---|
@@ -28,11 +28,11 @@ Comando `/implement-task <descrição>` encadeia os 7 papéis, pulando os que n�
 
 ## Depois do `review` dar PASS
 
-O agente-pai (`pi`) faz commit/push da branch de feature — nunca push direto em `dev`/`qa`/`hml`/`master`, mesma convenção do resto do repo (o hook `.claude/hooks/block-dangerous-git.sh` só roda em sessão Claude Code, não no `pi`, mas a regra vale igual pra ele).
+O agente-pai (`pi`) faz commit/push da branch de feature — nunca push direto em `dev`/`qa`/`hml`/`main`, mesma convenção do resto do repo (o hook `.claude/hooks/block-dangerous-git.sh` só roda em sessão Claude Code, não no `pi`, mas a regra vale igual pra ele).
 
-`/code-review` roda manual, local, numa sessão interativa normal do Claude Code (nunca headless/`-p` disparado pelo CI — risco de cobrança fora do plano de assinatura). Ao terminar com PASS, grava `.pi/code-review-ok.json` (hash do commit revisado + data/hora) — esse arquivo entra no commit normal da branch.
+`/code-review` roda manual, local, numa sessão interativa normal do Claude Code (nunca headless/`-p` disparado pelo CI — risco de cobrança fora do plano de assinatura). Ao terminar com PASS, grava `.pi/code-review-ok.json` (hash do commit revisado + data/hora) **dentro de cada repositório de código alterado** (`<projeto>-api/.pi/code-review-ok.json`, com o sha daquele repositório) — esse arquivo entra no commit normal da branch. O `.pi/` da raiz do workspace é configuração dos subagents, não prova de review.
 
-O push em `feature/*` dispara um stage `verify-code-review` no GitLab CI: só bash, sem chamar IA nenhuma — confere se `.pi/code-review-ok.json` existe e se o hash gravado bate com o commit do push. Bateu: o mesmo job abre a MR pra `dev` automaticamente (`glab mr create --target-branch dev`). Não bateu ou não existe: pipeline falha, nenhuma MR é aberta — quem estiver rodando o `pi` precisa rodar `/code-review` de novo antes de reenviar. Promoção `dev → qa/hml/master` é a esteira de deploy (ver `docs/agents/esteira-deploy.md`), nenhum agente faz isso diretamente.
+O push em `feature/*` dispara um stage `verify-code-review` no GitLab CI: só bash, sem chamar IA nenhuma — confere se `.pi/code-review-ok.json` existe e se o hash gravado bate com o commit do push. Bateu: o mesmo job abre a MR pra `dev` automaticamente (`glab mr create --target-branch dev`). Não bateu ou não existe: pipeline falha, nenhuma MR é aberta — quem estiver rodando o `pi` precisa rodar `/code-review` de novo antes de reenviar. Promoção `dev → qa/hml/main` é a esteira de deploy (ver `docs/agents/esteira-deploy.md`), nenhum agente faz isso diretamente.
 
 ## Execução paralela
 

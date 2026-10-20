@@ -15,7 +15,7 @@ Este repo já tem segurança em duas camadas que não se sobrepõem por acaso �
 
 **Periódico, não por ticket:** `skill-scanner` (varre as skills instaladas em `.claude/skills/`), `crypto-audit`, `mobile-audit` (se o projeto tiver app mobile) — mesmo padrão do `/improve-codebase-architecture`.
 
-**3. DefectDojo + `Security-Scanner` — infra, fora do fluxo de spec.** Scanner por assinatura (Trivy/Opengrep/Checkov/BetterLeaks/ZAP), achados importados num dashboard, roda independente de qualquer ticket. Não substitui a camada 2 — pega classe diferente de problema (SAST/dependência/container/DAST por ferramenta, não revisão semântica por IA).
+**3. `Security-Scanner` — scanners por assinatura, fora do fluxo de spec.** Trivy/Opengrep/Checkov/BetterLeaks/ZAP rodando no stage `security` da esteira (`template-ci`), com gate por severidade e relatório consolidado como artifact; também roda local via CLI, independente de qualquer ticket. Não substitui a camada 2 — pega classe diferente de problema (SAST/dependência/container/DAST por ferramenta, não revisão semântica por IA).
 
 ## Fluxo: você roda uma auditoria manual e encontra um achado
 

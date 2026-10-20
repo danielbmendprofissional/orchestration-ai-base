@@ -13,3 +13,7 @@ As skills falam em termos de cinco papéis canônicos de triagem. Este arquivo m
 Quando uma skill mencionar um papel (ex: "aplicar a label de triagem AFK-ready"), use a string correspondente desta tabela.
 
 Editar a coluna da direita se o vocabulário do GitLab mudar.
+
+## Labels de área (workspace)
+
+Além do papel de triagem, toda issue leva a área que ela toca — `backend`, `frontend` ou as duas (ver `docs/agents/workspace.md`). É por ela que cada agente filtra o que é seu. Issue sem área volta pra `needs-triage`.

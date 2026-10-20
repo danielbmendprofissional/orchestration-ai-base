@@ -1,6 +1,6 @@
 # ai-base
 
-Projeto base pra todo novo workflow assistido por IA — stack-agnóstico no backend, Angular fixo no frontend. O que este repo fixa é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request → esteira de deploy.
+Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-workspace` de cada projeto (ver `docs/agents/workspace.md`) — stack-agnóstico no backend, Angular fixo no frontend. O que este repo fixa é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request → esteira de deploy.
 
 ## Por onde começar
 
@@ -15,7 +15,8 @@ Projeto base pra todo novo workflow assistido por IA — stack-agnóstico no bac
 ### `docs/agents/` — skills e regras de execução
 
 - `orchestration.md` — orquestração `pi.dev` + Alethe (subagents `data`/`backend`/`front`/`ui`/`tests`/`security`/`review`, execução paralela).
-- `esteira-deploy.md` — promoção de branch `dev → qa → hml → master`, hotfix.
+- `workspace.md` — padrão de projeto: workspace (regras + issues) + um repositório por componente (`-api`, `-frontend`).
+- `esteira-deploy.md` — promoção de branch `dev → qa → hml → main`, hotfix.
 - `infra-local.md` — modelo de infra compartilhada (Postgres/Redis/RabbitMQ/Keycloak), o que todo projeto novo ganha nela, e as diferenças pra produção (AWS).
 - `observabilidade-backup.md` — `/health`, `/metrics`, log JSON, backup de Postgres.
 - `security-review.md` — camadas de segurança, skills de auditoria manual, fluxo de correção de achado.
@@ -40,4 +41,4 @@ Vazio por padrão — cada projeto real registra suas próprias decisões de arq
 - `.claude/hooks/` — guardrail de git (bloqueia push direto em branch protegida, force push, reset hard, etc — só vale pra sessão Claude Code).
 - `.pi/` — camada de execução: subagents de papel (data, backend, front, ui, tests, security, review) rodando via pi.dev.
 - `.mcp.json` — MCP do projeto (bloco GitLab sempre, GitHub sob demanda), sempre `"disabled": true`.
-- `.gitlab-ci.yml` — pipeline de CI (stage `verify-code-review`, promoção por tag).
+- `templates/` — `.gitlab-ci.yml` dos repositórios de código (`api.gitlab-ci.yml`, `frontend.gitlab-ci.yml`), consumindo o `template-ci`. O workspace em si não tem pipeline.

@@ -4,3 +4,8 @@
 Claude outputs/*
 Claude outputs/
 Claude outputs
+
+# Workspace: cada componente é um repositório git próprio dentro desta pasta
+# (ver docs/agents/workspace.md). Componente novo → linha nova aqui.
+/*-api/
+/*-frontend/

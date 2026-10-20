@@ -2,6 +2,10 @@
 
 Projeto base para todo novo workflow assistido por IA — backend sem stack fixa; frontend fixo em Angular (ver seção abaixo). O que fica fixo aqui é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request para branch protegida (validação humana).
 
+## Estrutura: workspace com um repositório por componente
+
+Este repositório é o **workspace** do projeto (`<projeto>-workspace`): regras, docs, specs e issues. O código mora em repositórios próprios dentro desta pasta — `<projeto>-api/` (.NET) e `<projeto>-frontend/` (Angular) —, cada um com git, tags e esteira independentes. Git sempre com `git -C <repositório>`, issues sempre no workspace. Ver `docs/agents/workspace.md`.
+
 ## Papéis fixos das ferramentas
 
 - **Claude Code**: pensar, arquitetar, montar specs/tasks, revisar, decidir. É quem roda as skills abaixo.
@@ -19,7 +23,7 @@ Todas as skills em `.claude/skills/` têm `disable-model-invocation: true` — n
 
 ### Issue tracker
 
-Issues e specs vivem no GitLab, via GitLab MCP quando configurado no projeto; fallback manual via `glab` documentado em `docs/agents/issue-tracker.md`. Configuração do MCP é por projeto — cada repositório instanciado a partir deste template aponta pro seu próprio GitLab.
+Issues e specs vivem no GitLab, **todas no repositório do workspace** (label `backend`/`frontend` por área), via GitLab MCP quando configurado no projeto; fallback manual via `glab` documentado em `docs/agents/issue-tracker.md`. Configuração do MCP é por projeto — cada workspace instanciado a partir deste template aponta pro seu próprio grupo no GitLab.
 
 > **Nota de instanciação:** o parágrafo acima é genérico de propósito. Se este arquivo estiver sendo copiado do `ai-base` para um projeto real, não é preciso editar nada aqui — mas confira `docs/agents/issue-tracker.md` no projeto novo pra saber se o MCP já está configurado ou se ainda vale o fallback via `glab`.
 
@@ -29,7 +33,7 @@ Vocabulário padrão de 5 papéis (`needs-triage`, `needs-info`, `ready-for-agen
 
 ### Segurança (skills de auditoria manual)
 
-Camadas de segurança além do checklist automático do subagent `security` (`.pi/agents/security.md`): skills do Claude Code (`security-review`, `owasp-audit`, `dependency-audit`, `secrets-audit`, entre outras) rodadas sob demanda, mais o scanner de infra (`Security-Scanner`/DefectDojo). Instalação é setup de projeto, fora deste repo; camadas e fluxo de correção de achado em `docs/agents/security-review.md`.
+Camadas de segurança além do checklist automático do subagent `security` (`.pi/agents/security.md`): skills do Claude Code (`security-review`, `owasp-audit`, `dependency-audit`, `secrets-audit`, entre outras) rodadas sob demanda, mais o scanner de infra (`Security-Scanner`, que também roda no stage `security` da esteira). Instalação é setup de projeto, fora deste repo; camadas e fluxo de correção de achado em `docs/agents/security-review.md`.
 
 ### Domain docs
 
@@ -40,11 +44,12 @@ Camadas de segurança além do checklist automático do subagent `security` (`.p
 Fluxo de branches (promoção via esteira de deploy por tag, não é só uma branch protegida):
 
 ```
-feature-x → MR → dev → qa → hml → master
+feature-x → MR → dev → qa → hml → main
 ```
 
+- Vale por repositório de código (`<projeto>-api`, `<projeto>-frontend`), cada um com sua esteira. Issue que toca os dois: mesma branch `feature-x` nos dois, uma MR em cada, API retrocompatível e promovida antes (ver `docs/agents/workspace.md`).
 - O agente sempre sobe o trabalho em `feature-x` e abre merge request pra `dev` — nunca commita direto em nenhuma das branches promovidas.
-- `dev`, `qa`, `hml` e `master` são todas protegidas. Promoção `dev → qa` é feita por merge direto por tag (comando manual do agente-pai, sem Merge Request — não confundir com automação de CI); `qa → hml` e `hml → master` passam por Merge Request com aprovação humana. Ver `docs/agents/esteira-deploy.md` pro fluxo completo.
-- Hotfix direto em `master`: habilitado, mas só por pedido humano direto — branch `hotfix/xxx`, MR, aprovação humana. Não é bypass do processo, é rota de emergência com o mesmo gate de revisão. Ver `docs/agents/esteira-deploy.md`.
-- **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via skill `git-guardrails-claude-code`): bloqueia `git push` direto em `main`/`master`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal. Vale só pra sessão Claude Code — o `pi` (execução) segue a mesma regra por convenção, não por hook.
+- `dev`, `qa`, `hml` e `main` são todas protegidas. Promoção `dev → qa` é feita por merge direto por tag (comando manual do agente-pai, sem Merge Request — não confundir com automação de CI); `qa → hml` e `hml → main` passam por Merge Request com aprovação humana. Ver `docs/agents/esteira-deploy.md` pro fluxo completo.
+- Hotfix direto em `main`: habilitado, mas só por pedido humano direto — branch `hotfix/xxx`, MR, aprovação humana. Não é bypass do processo, é rota de emergência com o mesmo gate de revisão. Ver `docs/agents/esteira-deploy.md`.
+- **Isso é reforçado por hook** (`.claude/hooks/block-dangerous-git.sh`, via skill `git-guardrails-claude-code`): bloqueia `git push` direto em `main`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .`. Push de feature branch funciona normal. Vale só pra sessão Claude Code — o `pi` (execução) segue a mesma regra por convenção, não por hook.
 - Specs e tickets seguem `docs/workflow.md`.

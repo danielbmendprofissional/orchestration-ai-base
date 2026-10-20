@@ -21,6 +21,8 @@ Em vez de inferir, **a skill `/domain-modeling` (via `/grill-with-docs`) confirm
 3. Se for mais de um: perguntar onde o código de cada contexto mora nesse projeto específico — pode ser uma pasta de módulo, um serviço em subpasta, um repositório inteiro separado. Gravar em `CONTEXT-MAP.md` na raiz: nome do contexto → caminho (ou referência externa). Cada `CONTEXT.md` fica ao lado do código daquele contexto, onde quer que essa conversa tenha definido que ele mora — nunca presumir `src/<contexto>/` como padrão.
 4. Se o projeto já usa `CLAUDE.md` aninhado por módulo/serviço (arquitetura/stack daquele módulo, carregado automaticamente pelo Claude Code por pasta), o `CONTEXT.md` do contexto correspondente mora ao lado dele quando fizer sentido — são arquivos com papéis diferentes: `CLAUDE.md` é "como isso é construído", empilhado automático por pasta; `CONTEXT.md` é "vocabulário e decisões deste domínio", só lido quando uma instrução manda ler.
 
+**Workspace (padrão, ver `docs/agents/workspace.md`):** o ponto de partida é um contexto por repositório de código — `CONTEXT.md` dentro de `<projeto>-api/` e de `<projeto>-frontend/` (glossários que não se sobrepõem), e `CONTEXT-MAP.md` na raiz do workspace apontando os dois (`backend → <projeto>-api/CONTEXT.md`). Contextos a mais dentro de um repositório seguem a conversa acima.
+
 **Revisão:** se durante o trabalho aparecer sinal de que a divisão não bate mais com a realidade (vocabulário colidindo entre partes que hoje compartilham um `CONTEXT.md`, ou um contexto novo claramente nascendo), a skill confirma de novo com o humano antes de reorganizar — não decide sozinha que agora precisa dividir ou juntar contextos.
 
 ## Usar o vocabulário do glossário

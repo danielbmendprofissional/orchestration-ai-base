@@ -12,7 +12,9 @@ Preferência: **GitLab MCP**, quando configurado no projeto — acesso estrutura
 - **Fechar**: `glab issue close <number>`. Como `close` não aceita comentário, postar a explicação antes com `glab issue note`, depois fechar.
 - **Merge requests**: `glab mr create`, `glab mr view`, `glab mr note` — mesmo padrão de `gh pr ...` trocando `pr` por `mr` e `comment`/`--body` por `note`/`--message`.
 
-`glab` infere o repo a partir de `git remote -v` quando rodado dentro do clone.
+**Todas as issues ficam no `<projeto>-workspace`** (ver `docs/agents/workspace.md`): sempre passar `-R <grupo>/<projeto>-workspace` nos comandos de issue — rodado de dentro de `<projeto>-api/` o `glab` inferiria o repositório errado. Label de área obrigatória em toda issue: `backend`, `frontend` ou as duas. MR é criada no repositório de código (`glab mr create -R <grupo>/<projeto>-api ...`) e fecha a issue com `Closes <grupo>/<projeto>-workspace#<n>` na descrição.
+
+`glab` infere o repo a partir de `git remote -v` quando rodado dentro do clone — na raiz do workspace, isso já é o repositório das issues.
 
 ## Merge requests como superfície de triagem
 
