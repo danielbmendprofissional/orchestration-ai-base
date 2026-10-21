@@ -39,7 +39,7 @@ A infra gera, por projeto, `ai-infra/container/generated/projects/<projeto>.secr
 Em dev, .NET carrega via user-secrets (nunca em `appsettings*.json` versionado). O script grava direto no `secrets.json` do user-secrets do csproj, mesclando com o que já existe — sem pipe de shell (no PowerShell 5.1, `Get-Content ... | dotnet user-secrets set` falha por causa do BOM):
 
 ```powershell
-node <ai-infra>configsinfrainfra-config.mjs secrets <projeto> --csproj=<csproj da API>
+node <ai-infra>\configs\infra\infra-config.mjs secrets <projeto> --csproj=<csproj da API>
 ```
 
 O csproj precisa de `<UserSecretsId>` (`dotnet user-secrets init --project <csproj>`, uma vez). Repetir depois de cada `apply` que troque segredo. Nos ambientes publicados, as mesmas chaves vêm de Kubernetes Secret/ConfigMap — o código não muda.
