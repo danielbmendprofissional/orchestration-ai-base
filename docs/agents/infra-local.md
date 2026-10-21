@@ -36,13 +36,13 @@ A infra gera, por projeto, `ai-infra/container/generated/projects/<projeto>.secr
 | `Keycloak:Authority` / `Realm` / `ClientId` / `ClientSecret` | `http://localhost:8080/realms/<projeto>` / `<projeto>` / `<projeto>-api` / … |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` / `OTEL_RESOURCE_ATTRIBUTES` | `http://localhost:4318` / `service.namespace=<projeto>` |
 
-Em dev, .NET carrega via user-secrets (nunca em `appsettings*.json` versionado):
+Em dev, .NET carrega via user-secrets (nunca em `appsettings*.json` versionado). O script grava direto no `secrets.json` do user-secrets do csproj, mesclando com o que já existe — sem pipe de shell (no PowerShell 5.1, `Get-Content ... | dotnet user-secrets set` falha por causa do BOM):
 
 ```powershell
-Get-Content <ai-infra>\container\generated\projects\<projeto>.secrets.json | dotnet user-secrets set --project <csproj da API>
+node <ai-infra>configsinfrainfra-config.mjs secrets <projeto> --csproj=<csproj da API>
 ```
 
-Repetir depois de cada `apply` que troque segredo. Nos ambientes publicados, as mesmas chaves vêm de Kubernetes Secret/ConfigMap — o código não muda.
+O csproj precisa de `<UserSecretsId>` (`dotnet user-secrets init --project <csproj>`, uma vez). Repetir depois de cada `apply` que troque segredo. Nos ambientes publicados, as mesmas chaves vêm de Kubernetes Secret/ConfigMap — o código não muda.
 
 Regras que decorrem do contrato:
 - **Nunca** superusuário do Postgres, `guest` do RabbitMQ ou usuário `default` do Redis no código ou no `appsettings`.
