@@ -24,7 +24,7 @@ Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-works
 - `triage-labels.md` — vocabulário fixo de labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`).
 - `domain.md` — como `/domain-modeling` decide contextos, `CONTEXT.md`/`CONTEXT-MAP.md`, ADRs.
 
-### `docs/design/` — stack de UI fixa (Angular + PrimeNG + Tailwind)
+### `docs/design/` — stack de UI fixa (Angular + spartan/ui + Tailwind)
 
 - `component-library.md` — biblioteca de componentes por stack, motion, regra de tema custom obrigatório.
 - `tokens.md` — tokens de design (cor, tipografia, espaçamento, raio/sombra, movimento) como ponto de partida pro `DESIGN.md` gerado por `impeccable`.

@@ -13,7 +13,7 @@ Este repositório é o **workspace** do projeto (`<projeto>-workspace`): regras,
 
 ## Stack fixa de frontend
 
-**Angular** é a stack fixa pra todo site/aplicativo web enterprise/SaaS criado a partir deste template. React fica reservado só pra landing page isolada ou uso futuro pontual, quando a spec deixar isso explícito. Backend não tem stack fixa. Ver `docs/design/component-library.md` (PrimeNG como biblioteca de componentes default, skills oficiais do Angular) e `docs/design/principios.md` (cadeia `ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design` contra ai-slop).
+**Angular** é a stack fixa pra todo site/aplicativo web enterprise/SaaS criado a partir deste template. React fica reservado só pra landing page isolada ou uso futuro pontual, quando a spec deixar isso explícito. Backend não tem stack fixa. Ver `docs/design/component-library.md` (spartan/ui + Tailwind como biblioteca de componentes default — o PrimeNG 22 deixou de ser MIT —, skills oficiais do Angular) e `docs/design/principios.md` (cadeia `ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design` contra ai-slop).
 
 Ver `docs/workflow.md` para o fluxo completo ponta a ponta, `docs/agents/orchestration.md` para como o pi.dev orquestra os subagents executores (data/backend/front/ui/tests/security/review), `docs/design/` para tokens/biblioteca de componentes/princípios anti-ai-slop.
 
@@ -42,6 +42,8 @@ Camadas de segurança além do checklist automático do subagent `security` (`.p
 O projeto não sobe esses serviços: usa a infra compartilhada do `ai-infra`, onde ganhou uma "casa" isolada (banco, vhost, realm, prefixo Redis) que não enxerga a de outros projetos. Código e configuração leem **só as chaves do contrato** em `docs/agents/infra-local.md` (`ConnectionStrings:Postgres`, `RabbitMQ:*`, `Keycloak:*`...), em dev via user-secrets — nunca senha em `appsettings*.json` versionado, nunca superusuário/`guest`/`default`, nunca nome de chave inventado. Toda chave/canal Redis com `Redis:KeyPrefix`. Precisa de algo novo na infra (outro serviço, outra role)? Não é código do projeto: vira pedido pro agent `ai-ops/agents/infra/local-environment-config`. Log/métrica/health: `docs/agents/observabilidade-backup.md`.
 
 ### Domain docs
+
+**Glossário é sempre `CONTEXT.md`/`CONTEXT-MAP.md`, nunca `GLOSSARY.md`/`GLOSSARY-MAP.md`** — as skills `domain-modeling`/`grill-with-docs` usam esses nomes por padrão; neste repo, onde elas falarem em `GLOSSARY.md` leia `CONTEXT.md`, e `GLOSSARY-MAP.md` leia `CONTEXT-MAP.md`.
 
 `CONTEXT.md`/`CONTEXT-MAP.md` + `docs/adr/` — quantos contextos existem e onde cada um mora é decidido em conversa com o humano (via `/domain-modeling`), não uma estrutura fixa de pasta. Ver `docs/agents/domain.md`.
 
