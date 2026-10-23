@@ -15,6 +15,8 @@ Este repositório é o **workspace** do projeto (`<projeto>-workspace`): regras,
 
 **Angular** é a stack fixa pra todo site/aplicativo web enterprise/SaaS criado a partir deste template. React fica reservado só pra landing page isolada ou uso futuro pontual, quando a spec deixar isso explícito. Backend não tem stack fixa. Ver `docs/design/component-library.md` (spartan/ui + Tailwind como biblioteca de componentes default — o PrimeNG 22 deixou de ser MIT —, skills oficiais do Angular) e `docs/design/principios.md` (cadeia `ui-ux-pro-max-skill` + `impeccable.style` + `avoid-ai-design` contra ai-slop).
 
+**Padrões que o projeto herda** (o discovery confirma; o que divergir vira ADR do projeto citando a seção): `docs/agents/padrao-frontend.md` (stack, camadas, config em runtime, sessão no front) e `docs/agents/padrao-api.md` (paginação, erros, sessão BFF, permissões, identificadores).
+
 Ver `docs/workflow.md` para o fluxo completo ponta a ponta, `docs/agents/orchestration.md` para como o pi.dev orquestra os subagents executores (data/backend/front/ui/tests/security/review), `docs/design/` para tokens/biblioteca de componentes/princípios anti-ai-slop.
 
 ## Agent skills

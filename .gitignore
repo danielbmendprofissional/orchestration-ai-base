@@ -9,3 +9,7 @@ Claude outputs
 # (ver docs/agents/workspace.md). Componente novo → linha nova aqui.
 /*-api/
 /*-frontend/
+
+# Referências locais (telas e código de outros sistemas): nunca versionar.
+# O que virar referência do projeto (protótipo aprovado) vai pra docs/design/prototipos/.
+docs/referencias/

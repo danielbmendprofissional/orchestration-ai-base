@@ -16,6 +16,8 @@ Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-works
 
 - `orchestration.md` — orquestração `pi.dev` + Alethe (subagents `data`/`backend`/`front`/`ui`/`tests`/`security`/`review`, execução paralela).
 - `workspace.md` — padrão de projeto: workspace (regras + issues) + um repositório por componente (`-api`, `-frontend`).
+- `padrao-frontend.md` / `padrao-api.md` — padrões herdados por todo projeto (stack e camadas do Angular, config em runtime; paginação, erros, sessão BFF, IDs). O discovery confirma; divergência vira ADR.
+- `spec-format.md` — formato de spec e gate de "pronto para especificar" (o `/to-spec` segue este arquivo, não o template da skill).
 - `esteira-deploy.md` — promoção de branch `dev → qa → hml → main`, hotfix.
 - `infra-local.md` — modelo de infra compartilhada (Postgres/Redis/RabbitMQ/Keycloak), o que todo projeto novo ganha nela, e as diferenças pra produção (AWS).
 - `observabilidade-backup.md` — `/health`, `/metrics`, log JSON, backup de Postgres.
