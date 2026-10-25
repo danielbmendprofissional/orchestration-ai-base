@@ -51,6 +51,10 @@ O projeto não sobe esses serviços: usa a infra compartilhada do `ai-infra`, on
 
 `CONTEXT.md`/`CONTEXT-MAP.md` + `docs/adr/` — quantos contextos existem e onde cada um mora é decidido em conversa com o humano (via `/domain-modeling`), não uma estrutura fixa de pasta. Ver `docs/agents/domain.md`.
 
+### Melhoria em repositório compartilhado
+
+Falta ou erro em `ai-base`, `ai-infra`, `ai-ops` ou `template-ci` (inclusive o `verify` da infra): **não contorne em silêncio nem edite de dentro do projeto**. Proponha ao humano, com a sua recomendação se bloqueia a fatia atual, e com o sim abra uma issue no repositório certo (`docs/agents/melhoria-orquestracao.md`). Quem executa é o `/issue-ai <n>`, aberto dentro daquele repositório.
+
 ## Convenções de repo
 
 Fluxo de branches (promoção via esteira de deploy por tag, não é só uma branch protegida):

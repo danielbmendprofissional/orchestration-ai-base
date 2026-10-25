@@ -78,6 +78,8 @@ Escreveu código de produção antes de ver o teste vermelho? **Desfaça esse c�
 
 Demais regras — as mesmas dos executores em `.claude/agents/`: só o escopo da task, nada de "Não toque".
 
+Percebeu falta ou erro em repositório compartilhado (`ai-base`, `ai-infra`, `ai-ops`, `template-ci`)? Não contorne nem edite lá: **pare nesse ponto**, proponha ao humano (`docs/agents/melhoria-orquestracao.md`) dizendo se bloqueia a fatia, e só abra a issue com o sim. Não bloqueia → siga e registre no relatório.
+
 `tests` (subagente) só se a task juntar duas ou mais camadas. `security`: em task que toque auth, sessão, segredo, permissão ou dependência nova — e, com `risco: alto`, **uma vez sobre o diff da fatia inteira** antes da review do passo 3.
 
 ## 2. Conferir e comitar (por task)

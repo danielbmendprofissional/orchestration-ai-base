@@ -11,6 +11,7 @@ Somente leitura: não altera arquivo, issue, label nem branch. Argumento `$ARGUM
 3. GitLab (`-R <grupo>/<projeto>-workspace`): mães abertas (`glab issue list --search "—" -O json`, título `^<código> — `) com seus labels e o painel `<!-- execucao -->`; MRs abertas e mergeadas recentes em cada repositório (`glab mr list -R <grupo>/<repo> --search "<código> —"`).
 4. Branches `feature/*` locais com commits à frente de `origin/dev` e arquivos de spec em `specs/feature/` sem mãe.
 5. `node .claude/scripts/check-spec-drift.mjs` (sem argumento): o desvio de cada spec pendente do mapa em relação a `dev`.
+6. Melhorias abertas no `orchestration-ai` (`docs/agents/melhoria-orquestracao.md`): para `ai-base`, `ai-infra`, `ai-ops` e `ai-pipeline/template-ci`, `glab issue list -R orchestration-ai/<repo> --label "origem:<projeto>" -O json` (estado aberto), separando as com label `bloqueia:<projeto>` e a MR aberta de cada uma (`glab mr list -R … --search "#<n>"`).
 
 ## 2. Classificar cada fatia
 
@@ -48,7 +49,9 @@ Regras da resposta:
 - **Em paralelo:** só fatias livres cujo "Toca em" não cruza com nenhuma `em-execucao`; sem a coluna, diga que não dá pra garantir.
 - Uma única ação humana em "Seu próximo passo"; se há várias pendentes (duas MRs, uma spec), liste em ordem de desbloqueio e destaque a que destrava mais fatias.
 - Estado ambíguo (MR mergeada sem fechar, branch sem mãe, mãe `em-execucao` sem painel): diga o que viu e o que fazer, sem corrigir.
+- **Melhorias:** liste cada uma (`ai-infra#7 — verify prova aud e PKCE · MR !3 aberta`). Fatia que uma delas **bloqueia** (`bloqueia:` + a fatia no corpo) **não é recomendada como próxima** enquanto a issue não estiver fechada pelo merge: diga "B4 espera ai-infra#7" e o seu próximo passo é abrir aquele repositório e rodar `/issue-ai 7` (ou mergear a MR). As que não bloqueiam aparecem como lembrete, com a fatia sugerida para resolvê-las antes.
 - **Specs desatualizadas:** uma linha por spec pendente com a saída do passo 5 (`A1: ⚠ desatualizada — 11 commits em esteira-api, citados que mudaram: …`, ou `sem base registrada`; `B3: ✔ em dia`). Spec desatualizada que é a próxima fatia vira o seu próximo passo: `/fatia <código>` revalida.
+- **Mapa sem conferir:** `git log -1 --format=%ct -- specs/README.md` contra o último commit em `docs/adr/`, `docs/design/prototipos/`, `docs/mudancas-*.md` e `PENDENCIAS.md`. Algum desses é **mais novo** que o mapa → "Mapa: ADR/protótipo/mudança alterados depois do último ajuste do mapa — rode `/mapa`". Só avisa; quem confere é o `/mapa`.
 - **Mapa desatualizado:** compare a coluna Status do `specs/README.md` com o git (MRs mergeadas em `dev`); divergência → diga qual linha está velha. Quem corrige é o `/fatia` (no commit da spec).
 - **Decisões em aberto:** para a próxima fatia, procure em `docs/adr/` e nos `docs/agents/padrao-*.md` o que cobre o assunto dela. Coberto → "Decisões: ADR-000X cobre — vá direto no `/fatia`". Há lacuna → "Decisões: falta <assunto> — o `/fatia` fará um grill curto"; fatia fora do mapa ou só uma frase vaga → "rode `/grill-with-docs` antes". Nunca invente cobertura: se não achou ADR, diga que não achou.
 
