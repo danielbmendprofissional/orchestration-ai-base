@@ -18,3 +18,8 @@ variables:
   # feature/* → verify-code-review (.code-review-ok.json) → MR automática pra dev.
   # Exige GITLAB_TOKEN (project access token, escopo api) nas variáveis do projeto.
   REVIEW_GATE_ENABLED: "true"
+  # Merge da MR na dev fecha a mãe e as filhas da fatia no workspace (template-ci/README.md, "Fechar a fatia").
+  # GITLAB_TOKEN precisa enxergar todos os projetos abaixo: group access token (api, Developer).
+  FECHAR_FATIA_ENABLED: "false"       # "true" depois de preencher as duas linhas abaixo
+  WORKSPACE_PROJECT: ""        # ex: grupo/projeto-workspace
+  SLICE_REPOS: ""              # ex: "grupo/projeto-api grupo/projeto-frontend"
