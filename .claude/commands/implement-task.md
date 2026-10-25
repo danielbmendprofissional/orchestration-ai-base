@@ -56,7 +56,7 @@ Nomes (`docs/agents/orchestration.md`, "Nomes"): mãe `B2 — <título>`, filhas
    - [ ] MR
    <!-- /execucao -->
    ```
-   Atualizar = ler a descrição (`glab issue view <mãe> -R <grupo>/<projeto>-workspace -F json`), trocar só o bloco e gravar (`glab issue update <mãe> -R … --description "<descrição inteira>"`). **Atualize em lote, só nestes momentos:** ao começar, a cada filha comitada, ao começar/terminar a suite, no início e no resultado de cada rodada de review, na MR e ao parar. Nada de label ou nota por filha — o painel é o registro.
+   Atualizar = ler a descrição (`glab issue view <mãe> -R <grupo>/<projeto>-workspace -O json`), trocar só o bloco e gravar (`glab issue update <mãe> -R … --description "<descrição inteira>"`). **Atualize em lote, só nestes momentos:** ao começar, a cada filha comitada, ao começar/terminar a suite, no início e no resultado de cada rodada de review, na MR e ao parar. Nada de label ou nota por filha — o painel é o registro.
 7. **MR já aberta para a branch** (`glab mr list -R <grupo>/<repo> --source-branch <branch>`): os comentários não resolvidos dela (`glab api projects/:id/merge_requests/<iid>/discussions`) são correções pedidas pelo humano. Cada um vira uma correção no passo 1 (commit `fix: … (B2.N · workspace#<filha>)`), e no passo 4 você responde o comentário com o sha.
 
 ## 1. Por task (na ordem do `Blocked by`, só as não feitas)

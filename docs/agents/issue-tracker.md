@@ -5,8 +5,8 @@ Preferência: **GitLab MCP**, quando configurado no projeto — acesso estrutura
 ## Convenções
 
 - **Criar issue**: `glab issue create --title "..." --description "..."`. Heredoc pra descrição multi-linha. `--description -` abre editor.
-- **Ler issue**: `glab issue view <number> --comments`. `-F json` pra saída programática.
-- **Listar issues**: `glab issue list -F json` com `--label` conforme necessário.
+- **Ler issue**: `glab issue view <number> --comments`. `-O json` pra saída programática.
+- **Listar issues**: `glab issue list -O json` com `--label` conforme necessário.
 - **Comentar**: `glab issue note <number> --message "..."`. GitLab chama comentário de "note".
 - **Aplicar/remover label**: `glab issue update <number> --label "..."` / `--unlabel "..."`.
 - **Fechar**: `glab issue close <number>`. Como `close` não aceita comentário, postar a explicação antes com `glab issue note`, depois fechar.
@@ -66,6 +66,6 @@ Usadas por `/wayfinder`. O **map** é uma issue única com issues **filhas** com
 - **Map**: issue única com label `wayfinder:map`, corpo Notes / Decisions-so-far / Fog. `glab issue create --label wayfinder:map`.
 - **Ticket filho**: issue com `Part of #<map>` no topo da descrição e label `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Ao ser reivindicado, atribuído ao dev que está tocando.
 - **Bloqueio**: link nativo do GitLab via quick action `/blocked_by #<n>`, postado como note (recurso Premium/Ultimate; no tier free, usar linha `Blocked by: #<n>, #<n>` no topo da descrição). Ticket desbloqueia quando todos os bloqueadores fecham.
-- **Frontier query**: `glab issue list -F json` filtrado nas filhas do map, descartando as com bloqueador aberto ou assignee; a primeira na ordem do map vence.
+- **Frontier query**: `glab issue list -O json` filtrado nas filhas do map, descartando as com bloqueador aberto ou assignee; a primeira na ordem do map vence.
 - **Claim**: `glab issue update <n> --assignee @me`, primeira escrita da sessão.
 - **Resolve**: `glab issue note <n> --message "<resposta>"`, depois `glab issue close <n>`, depois anexar um ponteiro de contexto às Decisions-so-far do map.

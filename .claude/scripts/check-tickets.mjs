@@ -36,7 +36,7 @@ if (!criterios.length) {
 
 let raw;
 try {
-  raw = execFileSync('glab', ['issue', 'list', '-R', project, '--search', `${fatia}.`, '--all', '-F', 'json', '--per-page', '100'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  raw = execFileSync('glab', ['issue', 'list', '-R', project, '--search', `${fatia}.`, '--all', '-O', 'json', '--per-page', '100'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 } catch (e) {
   console.log(`FALHA: glab não listou as issues de ${project}: ${String(e.stderr || e.message).split('\n').map((l) => l.trim()).filter((l) => l && l !== 'ERROR').join(' ') || 'erro desconhecido'}`);
   process.exit(1);

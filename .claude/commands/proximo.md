@@ -8,7 +8,7 @@ Somente leitura: não altera arquivo, issue, label nem branch. Argumento `$ARGUM
 
 1. `git -C <repo> fetch origin` em cada repositório de código e no workspace.
 2. `specs/README.md`: a tabela de fatias (código, repositório, quem executa, depende de, toca em, risco, feito ou não).
-3. GitLab (`-R <grupo>/<projeto>-workspace`): mães abertas (`glab issue list --search "—" -F json`, título `^<código> — `) com seus labels e o painel `<!-- execucao -->`; MRs abertas e mergeadas recentes em cada repositório (`glab mr list -R <grupo>/<repo> --search "<código> —"`).
+3. GitLab (`-R <grupo>/<projeto>-workspace`): mães abertas (`glab issue list --search "—" -O json`, título `^<código> — `) com seus labels e o painel `<!-- execucao -->`; MRs abertas e mergeadas recentes em cada repositório (`glab mr list -R <grupo>/<repo> --search "<código> —"`).
 4. Branches `feature/*` locais com commits à frente de `origin/dev` e arquivos de spec em `specs/feature/` sem mãe.
 5. `node .claude/scripts/check-spec-drift.mjs` (sem argumento): o desvio de cada spec pendente do mapa em relação a `dev`.
 
@@ -17,6 +17,14 @@ Somente leitura: não altera arquivo, issue, label nem branch. Argumento `$ARGUM
 `feita` · `mergeada, falta fechar` · `MR aberta — aguarda você` · `em execução` (label `em-execucao`, com a área e o executor do painel) · `parou` (linha `⚠` no painel) · `spec escrita — aguarda sua aprovação` · `spec aprovada, sem tickets` · `tickets prontos — falta executar` · `livre` (todo "Depende de" feito) · `bloqueada` (diga por qual).
 
 ## 3. Responder — no máximo ~15 linhas
+
+A **primeira linha** é sempre o placar do mapa, contado das classificações do passo 2 (todas as linhas de `specs/README.md`, uma fatia = uma linha):
+
+```
+Mapa: 50 fatias · 7 feitas · 1 em execução · 1 spec aguardando seu ok · 41 sem spec (3 livres agora, 38 bloqueadas)
+```
+
+"Sem spec" = a linha não tem arquivo de spec. "Livres" = todo "Depende de" feito (podem receber `/fatia` agora); "bloqueadas" = esperam alguma fatia ainda não feita (diga as que mais bloqueiam: `B3 libera 4`). Se o mapa ganhou ou perdeu linhas desde a última vez, diga (`+2 fatias novas`). Depois do placar:
 
 ```
 Você está em: B2 — MR aberta, aguardando seu merge (<link>)
