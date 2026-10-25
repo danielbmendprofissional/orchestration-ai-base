@@ -14,7 +14,7 @@ Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-works
 
 ### `docs/agents/` — skills e regras de execução
 
-- `orchestration.md` — orquestração `pi.dev` + Alethe (subagents `data`/`backend`/`front`/`ui`/`tests`/`security`/`review`, execução paralela).
+- `orchestration.md` — `/implement-task` com subagentes do Claude Code (`data`/`backend`/`front`/`ui`/`tests`/`security`/`review`), os três modos (Claude, pago, free via OmniRoute), execução paralela no Alethe.
 - `workspace.md` — padrão de projeto: workspace (regras + issues) + um repositório por componente (`-api`, `-frontend`).
 - `padrao-frontend.md` / `padrao-api.md` — padrões herdados por todo projeto (stack e camadas do Angular, config em runtime; paginação, erros, sessão BFF, IDs). O discovery confirma; divergência vira ADR.
 - `spec-format.md` — formato de spec e gate de "pronto para especificar" (o `/to-spec` segue este arquivo, não o template da skill).
@@ -41,6 +41,6 @@ Vazio por padrão — cada projeto real registra suas próprias decisões de arq
 
 - `.claude/skills/` — **não versionado** (ver `.gitignore`): skills reinstaláveis por comando, não commitadas. `skills-lock.json` (esse sim versionado) registra origem e hash de cada uma, pra reinstalar de forma reprodutível.
 - `.claude/hooks/` — guardrail de git (bloqueia push direto em branch protegida, force push, reset hard, etc — só vale pra sessão Claude Code).
-- `.pi/` — camada de execução: subagents de papel (data, backend, front, ui, tests, security, review) rodando via pi.dev.
+- `.claude/agents/` e `.claude/commands/implement-task.md` — camada de execução: subagentes de papel (data, backend, front, ui, tests, security, review, qa) e o comando que os orquestra.
 - `.mcp.json` — MCP do projeto (bloco GitLab sempre, GitHub sob demanda), sempre `"disabled": true`.
 - `templates/` — `.gitlab-ci.yml` dos repositórios de código (`api.gitlab-ci.yml`, `frontend.gitlab-ci.yml`), consumindo o `template-ci`. O workspace em si não tem pipeline.
