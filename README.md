@@ -4,6 +4,8 @@ Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-works
 
 ## Por onde começar
 
+- **[Como usar a orquestração](docs-human/COMO-CRIAR-UM-PROJETO.md)**: roteiro humano, do zero até a esteira (máquina, projeto novo ou existente, discovery, design, rotina por fatia, correção, git em ordem).
+- **[Glossário de comandos](docs-human/glossario-de-comandos.md)**: tudo que você digita, quando e o que aprova.
 - Ideal utilizar o agent de infra do `ai-ops` (`local-environment-config`) pra configuração de máquina e configuração inicial de projeto; depois, com tudo configurado, inicia o workflow com o Claude Code.
 
 ## Estrutura do repo
@@ -11,6 +13,7 @@ Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-works
 - `CLAUDE.md` — instruções de projeto pro Claude Code.
 - `README.md` — este arquivo.
 - `docs/workflow.md` — o pipeline completo, discovery → esteira de deploy.
+- `docs-human/` — guias para o humano (`COMO-CRIAR-UM-PROJETO.md`, `glossario-de-comandos.md`). A IA não lê: são escritos para você digitar, não para agent seguir.
 
 ### `docs/agents/` — skills e regras de execução
 
