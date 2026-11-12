@@ -14,7 +14,6 @@ Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-co
 | [Começar a desenvolver — checklist do dia](#começar-a-desenvolver--checklist-do-dia) | O que abrir, em ordem, toda vez que for trabalhar |
 | [Abrir o Claude no shell do Alethe (ou qualquer terminal)](#abrir-o-claude-no-shell-do-alethe-ou-qualquer-terminal) | Comandos para copiar e colar: `claude`, `claude --model haiku`, `claude-pago`, `claude-free` |
 | [Acessos e senhas de desenvolvimento](#acessos-e-senhas-de-desenvolvimento) | URLs, usuários e onde achar cada senha, e os user-secrets da API |
-| [Quero…](#quero) | Tabela "tenho esta dúvida → vá para esta seção" |
 | [Visão geral](#visão-geral) | O fluxo inteiro em três linhas |
 | **Parte A — Montar o projeto (uma vez)** | |
 | [Parte A — Montar o projeto](#parte-a--montar-o-projeto-uma-vez) | Visão da montagem inicial |
@@ -22,9 +21,9 @@ Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-co
 | [A2 Projeto novo ou existente](#a2-projeto-novo-ou-existente) | Criar o projeto ou trazer um que já existe |
 | [A3 Discovery e decisões](#a3-discovery-e-decisões) | O que o discovery gera e o que não gera |
 | [A4 Fundação bootstrap e design](#a4-fundação-bootstrap-e-design) | As fatias de fundação, que não têm spec nem tickets |
-| [Conferir o mapa](#conferir-o-mapa) | Ver se o mapa de fatias cobre tudo |
+| [Conferir o mapa](#conferir-o-mapa) | Conferir se o mapa de fatias está completo |
 | **Design** | |
-| [Design](#design) | O caminho todo com `/design-init` |
+| [Design](#design) | Começar o design (app do zero ou já existente): referências, prompt e aprovação, com `/design-init` |
 | [D1 Reunir as referências (discovery visual)](#d1-reunir-as-referências-discovery-visual) | Juntar as referências visuais |
 | [D2 Pedir o design (o prompt)](#d2-pedir-o-design-o-prompt) | O prompt do design |
 | [App do zero](#app-do-zero) | Pedido de design para app novo |
@@ -33,7 +32,7 @@ Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-co
 | **Fluxo** | |
 | [Como o fluxo anda](#como-o-fluxo-anda) | Quantas fatias faltam e em que ponto cada uma está |
 | **Parte B — Rotina por fatia** | |
-| [Parte B Rotina por fatia](#parte-b-rotina-por-fatia) | Visão da rotina de cada fatia |
+| [Parte B Rotina por fatia](#parte-b-rotina-por-fatia) | Fazer a próxima fatia: visão da rotina |
 | [B1 Descobrir a próxima](#b1-descobrir-a-próxima) | `/proximo`: qual fatia fazer agora |
 | [B2 Quando as specs são geradas](#b2-quando-as-specs-são-geradas) | Quando cada spec nasce |
 | [B3 Aprovar a spec](#b3-aprovar-a-spec) | Sua única leitura antes do código |
@@ -178,29 +177,6 @@ npm start                                                         # o ng está d
 ```
 
 Abra `http://localhost:4200` (nunca direto a porta da API). Reiniciou a infra ou rodou o `secrets`? Reinicie a API.
-
-## Quero…
-
-| Quero | Vá para |
-|---|---|
-| **começar a desenvolver (o que abrir, em ordem)** | **[Checklist do dia](#começar-a-desenvolver--checklist-do-dia)** |
-| **achar uma senha/acesso de desenvolvimento** | **[Acessos](#acessos-e-senhas-de-desenvolvimento)** |
-| preparar a máquina | [A1](#a1-máquina) |
-| criar um projeto novo, ou trazer um que já existe | [A2](#a2-projeto-novo-ou-existente) |
-| entender o que o discovery gera (e o que não gera) | [A3](#a3-discovery-e-decisões) |
-| **conferir se o mapa está completo** | **[Conferir o mapa](#conferir-o-mapa)** |
-| **começar o design (app do zero ou já existente): referências, prompt e aprovação** | **[Design](#design)** |
-| **saber quantas fatias faltam e como o fluxo anda** | **[Como o fluxo anda](#como-o-fluxo-anda)** |
-| fazer a próxima fatia | [Parte B](#parte-b-rotina-por-fatia) |
-| saber quando as specs são geradas | [B2](#b2-quando-as-specs-são-geradas) |
-| **não gostei da implementação / a spec estava errada / refazer** | **[Como corrigir uma fatia](#como-corrigir-uma-fatia)** |
-| a execução parou (`PAROU`) | [Quando para](#quando-ele-para) |
-| rodar várias fatias ao mesmo tempo | [Paralelismo](#paralelismo) |
-| a spec ficou velha | [Spec velha](#spec-velha) |
-| **saber em que branch cada repositório está e o que commitar, mergear ou apagar** | **[Situação do git](#situação-do-git)** |
-| um agent sugeriu melhorar a infra, o template ou o processo | [Melhorias na orquestração](#melhorias-na-orquestração) |
-| onde está o glossário (`CONTEXT`) e os outros arquivos | [Onde fica cada coisa](#onde-fica-cada-coisa) |
-| ver o estado da Esteira | [Estado da Esteira](#estado-da-esteira) |
 
 ## Visão geral
 
