@@ -72,11 +72,16 @@ Variações:
 
 ## 6. Abrir a sessão (PowerShell)
 
-| Comando | Modo | Quando |
-|---|---|---|
-| `claude` | seu plano (padrão) | Sempre que possível |
-| `claude-pago` | OmniRoute, DeepSeek → Luna | Quando o plano apertar |
-| `claude-free` | OmniRoute, combos gratuitos | Último recurso |
+Funciona no shell do Alethe, no terminal do VS Code, PowerShell ou cmd, na raiz do workspace. Copie e cole:
+
+| Comando | Modo | Agente-pai | `sonnet` (executores, review) | `haiku` (tests, qa) | Quando |
+|---|---|---|---|---|---|
+| `claude` | seu plano (padrão) | Sonnet/Opus | Sonnet | Haiku | Sempre que possível |
+| `claude --model haiku` | seu plano, Haiku como pai | Haiku | Sonnet (o `review` e o `security` continuam fortes) | Haiku | Fatias bem especificadas, para gastar menos cota. **Em teste** |
+| `claude-pago` | OmniRoute, DeepSeek → Luna | `omni-pago` | `omni-pago` | `omni-free` | Quando o plano apertar |
+| `claude-free` | OmniRoute, combos gratuitos | `omni-free` | `omni-free` | `omni-light` | Último recurso (lento) |
+
+`omni-pago`, `omni-free`, `omni-review` e `omni-light` são nomes de combos do OmniRoute, não comandos: o que se digita é `claude-pago` ou `claude-free`. Os atalhos vêm do setup de modos (`~/.claude/modos/` e o perfil do PowerShell); "comando não encontrado" = abra um terminal novo ou refaça o setup.
 
 O modo é escolha de custo; o processo é o mesmo nos três. Trocar de modo = fechar a sessão e abrir outra, nunca no meio de uma conversa (`docs/agents/orchestration.md`).
 

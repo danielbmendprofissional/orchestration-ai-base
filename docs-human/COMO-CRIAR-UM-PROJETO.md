@@ -4,6 +4,60 @@ Guia curto. Cada seção termina com o link do detalhe. Todos os comandos: [glos
 
 > **Perdeu o fio?** Abra o Claude na raiz do workspace e digite **`/proximo`**. Ele diz onde você está, o seu próximo passo e de onde vem cada fatia.
 
+## Índice — todos os tópicos
+
+Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-comandos.md) (todo comando e script, com quando usar).
+
+| Tópico | Para que serve |
+|---|---|
+| **Rotina do dia** | |
+| [Começar a desenvolver — checklist do dia](#começar-a-desenvolver--checklist-do-dia) | O que abrir, em ordem, toda vez que for trabalhar |
+| [Abrir o Claude no shell do Alethe (ou qualquer terminal)](#abrir-o-claude-no-shell-do-alethe-ou-qualquer-terminal) | Comandos para copiar e colar: `claude`, `claude --model haiku`, `claude-pago`, `claude-free` |
+| [Acessos e senhas de desenvolvimento](#acessos-e-senhas-de-desenvolvimento) | URLs, usuários e onde achar cada senha, e os user-secrets da API |
+| [Quero…](#quero) | Tabela "tenho esta dúvida → vá para esta seção" |
+| [Visão geral](#visão-geral) | O fluxo inteiro em três linhas |
+| **Parte A — Montar o projeto (uma vez)** | |
+| [Parte A — Montar o projeto](#parte-a--montar-o-projeto-uma-vez) | Visão da montagem inicial |
+| [A1 Máquina](#a1-máquina) | Preparar a máquina (ferramentas, infra, modos do Claude) |
+| [A2 Projeto novo ou existente](#a2-projeto-novo-ou-existente) | Criar o projeto ou trazer um que já existe |
+| [A3 Discovery e decisões](#a3-discovery-e-decisões) | O que o discovery gera e o que não gera |
+| [A4 Fundação bootstrap e design](#a4-fundação-bootstrap-e-design) | As fatias de fundação, que não têm spec nem tickets |
+| [Conferir o mapa](#conferir-o-mapa) | Ver se o mapa de fatias cobre tudo |
+| **Design** | |
+| [Design](#design) | O caminho todo com `/design-init` |
+| [D1 Reunir as referências (discovery visual)](#d1-reunir-as-referências-discovery-visual) | Juntar as referências visuais |
+| [D2 Pedir o design (o prompt)](#d2-pedir-o-design-o-prompt) | O prompt do design |
+| [App do zero](#app-do-zero) | Pedido de design para app novo |
+| [App que já existe](#app-que-já-existe) | Pedido de design para app existente |
+| [D3 Aprovar e seguir](#d3-aprovar-e-seguir) | Aprovar o design e continuar |
+| **Fluxo** | |
+| [Como o fluxo anda](#como-o-fluxo-anda) | Quantas fatias faltam e em que ponto cada uma está |
+| **Parte B — Rotina por fatia** | |
+| [Parte B Rotina por fatia](#parte-b-rotina-por-fatia) | Visão da rotina de cada fatia |
+| [B1 Descobrir a próxima](#b1-descobrir-a-próxima) | `/proximo`: qual fatia fazer agora |
+| [B2 Quando as specs são geradas](#b2-quando-as-specs-são-geradas) | Quando cada spec nasce |
+| [B3 Aprovar a spec](#b3-aprovar-a-spec) | Sua única leitura antes do código |
+| [B4 Execução automática](#b4-execução-automática) | O que roda sozinho depois da aprovação |
+| [Quando ele para](#quando-ele-para) | O que fazer quando a execução diz `PAROU` |
+| [B5 Revisar a MR e mergear](#b5-revisar-a-mr-e-mergear) | Sua revisão na merge request |
+| [B6 Depois do merge](#b6-depois-do-merge) | O que acontece e o que fazer depois |
+| **Corrigir** | |
+| [Como corrigir uma fatia](#como-corrigir-uma-fatia) | Não gostei da implementação, a spec estava errada, refazer |
+| [Caso 1 Problema no código](#caso-1-problema-no-código) | |
+| [Caso 2 Corrigir sem comentar no GitLab](#caso-2-corrigir-sem-comentar-no-gitlab) | |
+| [Caso 3 A spec estava errada](#caso-3-a-spec-estava-errada) | |
+| [Caso 4 Descartar e refazer](#caso-4-descartar-e-refazer) | |
+| [Caso 5 Já mergeou e apareceu problema](#caso-5-já-mergeou-e-apareceu-problema) | |
+| **Outros** | |
+| [Spec velha](#spec-velha) | A spec ficou desatualizada |
+| [Paralelismo](#paralelismo) | Rodar várias fatias ao mesmo tempo |
+| [Situação do git](#situação-do-git) | Branch de cada repositório e o que commitar, mergear ou apagar (`/situacao`) |
+| [Melhorias na orquestração](#melhorias-na-orquestração) | Um agent sugeriu melhorar a infra, o template ou o processo |
+| [Onde fica cada coisa](#onde-fica-cada-coisa) | Glossário (`CONTEXT`) e os outros arquivos |
+| [Estado da Esteira](#estado-da-esteira) | Situação atual da Esteira |
+
+*Regra de manutenção:* seção nova neste guia entra aqui na mesma hora.
+
 ## Começar a desenvolver — checklist do dia
 
 Sempre que for trabalhar, nesta ordem. **Todos os comandos no PowerShell.** Exemplo com a Esteira; troque pelos caminhos do seu projeto.
@@ -14,7 +68,7 @@ Sempre que for trabalhar, nesta ordem. **Todos os comandos no PowerShell.** Exem
 | 2 | **Infra compartilhada** (Postgres, Redis, RabbitMQ, Keycloak, observabilidade, OmniRoute) | `cd <raiz-do-workspace>\ai-infra\configs\infra` e `node infra-config.mjs up` | termina com `✔ tudo conferido` (nunca `docker compose up` puro) |
 | 3 | **Conferir a infra** nas URLs abaixo | abrir no navegador | cada uma abre |
 | 4 | **Editor** | `code <raiz-do-workspace>\ai-pipeline\esteira` (VS Code, com o profile `dotnet-backend` para a API e `angular-frontend` para o front). Outro editor, como o Codex: abra a mesma pasta do **workspace** | a pasta do workspace aberta |
-| 5 | **Claude** (na raiz do workspace) | `cd <raiz-do-workspace>\ai-pipeline\esteira` e `claude` (ou `claude-pago` / `claude-free`; no Alethe, um painel por fatia) | abre o prompt |
+| 5 | **Claude** (na raiz do workspace) | `cd <raiz-do-workspace>\ai-pipeline\esteira` e um dos comandos de [Abrir o Claude](#abrir-o-claude-no-shell-do-alethe-ou-qualquer-terminal) (`claude` por padrão; no Alethe, um painel por fatia) | abre o prompt |
 | 6 | **Situação do git** | no Claude: `/situacao`, e peça *"pode alinhar e limpar"* para ele rodar os comandos de alinhar e limpar | "Pronto para começar a próxima fatia? SIM" |
 | 7 | **Próximo passo** | no Claude: `/proximo` | você sabe o que fazer |
 | 8 | **API** | `cd ...\esteira\esteira-api` e `dotnet run --project src\Esteira.Api --launch-profile http` | `http://localhost:5105/health` responde |
@@ -49,6 +103,35 @@ Os passos 8 e 9 só se for testar no navegador. Precisa de login? Veja [Acessos 
 | MRs/issues do `ai-infra`, `ai-base`, `ai-ops`, `template-ci` (melhorias) | `https://gitlab.com/orchestration-ai/<repo>/-/issues` |
 
 Os tickets de uma fatia aparecem como **Child items** dentro da issue-mãe. Fim do dia: nada solto — rode `/situacao` de novo.
+
+## Abrir o Claude no shell do Alethe (ou qualquer terminal)
+
+Vale para um painel do Alethe, o terminal do VS Code, PowerShell ou cmd. Sempre **na raiz do workspace** (ou na área isolada da fatia, `<workspace>.wt\b2\`). Copie e cole um:
+
+```powershell
+claude
+```
+Normal: usa o seu plano da Anthropic. É o padrão.
+
+```powershell
+claude --model haiku
+```
+Seu plano, com o Haiku como agente-pai (mais barato e mais rápido; **em teste**, ainda não é uma via fixa).
+
+```powershell
+claude-pago
+```
+OmniRoute com DeepSeek → Luna (pago por token, fora da sua cota). Precisa do OmniRoute de pé.
+
+```powershell
+claude-free
+```
+OmniRoute só com combos gratuitos (lento; último recurso). Precisa do OmniRoute de pé.
+
+- `claude-pago` e `claude-free` são atalhos criados no perfil do PowerShell pelo agent `local-environment-config`. Dizendo "comando não encontrado", abra um terminal novo; persistindo, o setup de modos não foi feito.
+- Escolha o modo **antes** de começar a fatia. Trocar no meio da conversa não vale: feche a sessão e abra outra.
+- Testar: `claude-pago -p "responda ok"` responde, e `node omniroute-config.mjs diff` (no `ai-infra`) mostra se o gateway está saudável.
+- Detalhe do que cada modo usa: [glossário, seção 6](glossario-de-comandos.md).
 
 ## Acessos e senhas de desenvolvimento
 
