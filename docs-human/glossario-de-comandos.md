@@ -41,7 +41,7 @@ Variações:
 
 | Comando | Para quê | Quando |
 |---|---|---|
-| `/code-review B3` | Revisa o diff da fatia contra `origin/dev` (padrões do repositório + conformidade com a spec). Não pergunta o ponto fixo | Normalmente nem é chamado à mão: o `/implement-task` roda, corrige e entrega |
+| `/code-review B3` | Revisa o diff da fatia contra `origin/main` (padrões do repositório + conformidade com a spec). Não pergunta o ponto fixo | Normalmente nem é chamado à mão: o `/implement-task` roda, corrige e entrega |
 | `/security-review` | Revisão de segurança do diff | Fatia que toca auth, sessão, segredo, dependência |
 | `/owasp-audit` · `/dependency-audit` · `/secrets-audit` | Auditorias específicas (OWASP Top 10, dependências/CVE, segredos) | Segunda camada em superfície sensível (`docs/agents/security-review.md`) |
 | `/tdd` | Test-first avulso (red-green-refactor) | Fora do `/implement-task` |
@@ -93,10 +93,10 @@ O modo é escolha de custo; o processo é o mesmo nos três. Trocar de modo = fe
 | `node .claude/scripts/worktree-fatia.mjs --remove B3` | Remove a área ao fim (as branches continuam) |
 | `node .claude/scripts/check-tickets.mjs B3 <spec.md> <grupo>/<projeto>-workspace` | Confere se cada critério da spec virou ticket (o `/fatia` já roda) |
 | `node .claude/scripts/situacao.mjs [--sem-mr] [--so-projeto]` | O que o `/situacao` roda. Exit 1 se há pendência sua (prioridade 1 ou 2) |
-| `node .claude/scripts/check-spec-drift.mjs [<spec>]` | Diz se uma spec **envelheceu** (commits novos em `dev` que tocam o que ela cita; sem linha `base:` = velha). Sem argumento: todas as pendentes. O `/proximo` e o `/fatia` já rodam |
-| `node .claude/scripts/check-spec-drift.mjs --stamp <spec>` | Grava a linha `base:` (sha de `dev` de agora) na spec. O `/fatia` faz ao aprovar |
+| `node .claude/scripts/check-spec-drift.mjs [<spec>]` | Diz se uma spec **envelheceu** (commits novos na `main` que tocam o que ela cita; sem linha `base:` = velha). Sem argumento: todas as pendentes. O `/proximo` e o `/fatia` já rodam |
+| `node .claude/scripts/check-spec-drift.mjs --stamp <spec>` | Grava a linha `base:` (sha da `main` de agora) na spec. O `/fatia` faz ao aprovar |
 | `node .claude/scripts/check-escopo.mjs <repo> <base> --allow … --deny …` | Confere o diff de uma task: fora do escopo, teste apagado, `skip`/`only`, **teste novo sem a marca da fatia** (o `/implement-task` já roda) |
-| `node .claude/scripts/status-specs.mjs` | Tabela do status **real** de todas as fatias do mapa (zero token): cruza o `specs/README.md` com a issue-mãe, a MR mergeada em `dev` e os testes marcados. Estados: `implementada`, `em execução`, `não iniciada`, `inconsistente` (o mapa e a evidência não batem; o motivo vem na linha). Exit 1 se houver inconsistente. Demora ~10 s por consultar o GitLab; `--sem-gitlab` pula, `--fetch` atualiza o git antes |
+| `node .claude/scripts/status-specs.mjs` | Tabela do status **real** de todas as fatias do mapa (zero token): cruza o `specs/README.md` com a issue-mãe, a MR mergeada na `main` e os testes marcados. Estados: `implementada`, `em execução`, `não iniciada`, `inconsistente` (o mapa e a evidência não batem; o motivo vem na linha). Exit 1 se houver inconsistente. Demora ~10 s por consultar o GitLab; `--sem-gitlab` pula, `--fetch` atualiza o git antes |
 | `node .claude/scripts/status-specs.mjs B2` | Uma linha só, para uma fatia. Com `--pre-entrega`, é o gate que o `/implement-task` roda antes da review: falha se nenhum teste leva a marca da fatia |
 
 **Marca da fatia nos testes:** todo teste novo leva o código da fatia (`B2`, não `B2.5`), e é isso que o `status-specs.mjs` conta. .NET: `[Trait("Fatia", "B2")]` na classe · Vitest: `describe('[B2] Nome', …)` · Playwright: `{ tag: '@B2' }`. Rodar só a fatia: `dotnet test --project <projeto de teste> -- --filter-trait "Fatia=B2"`. Regra completa em `docs/agents/orchestration.md`, "Marca da fatia nos testes".
@@ -106,8 +106,8 @@ O modo é escolha de custo; o processo é o mesmo nos três. Trocar de modo = fe
 ## 8. Quem entra sozinho (você não chama)
 
 - **Subagentes** (`.claude/agents/`): `data`, `backend`, `front`, `ui` (executores no modo pago/free), `tests`, `security`, `review`, `qa`. Chamados pelo `/implement-task`.
-- **Hook** `block-dangerous-git.sh`: bloqueia push direto em `main`/`dev`/`qa`/`hml`, `--force`, `reset --hard`, `clean -f`, `branch -D`. Vale para toda sessão e subagente.
-- **CI (template-ci):** `verify-code-review` (confere a prova do review e abre a MR), `fechar-fatia` (fecha mãe e filhas no merge; quando ligado).
+- **Hook** `block-dangerous-git.sh`: bloqueia push direto em `main`, `--force`, `reset --hard`, `clean -f`, `branch -D`. Vale para toda sessão e subagente.
+- **CI (template-ci):** `verify-code-review` (confere a prova do review e abre a MR), `fechar-fatia` (fecha mãe e filhas no merge, na `main`, e quando a MR é fechada pela reprovação destrói o preview; quando ligado).
 
 ## 9. Onde olhar no GitLab
 

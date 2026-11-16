@@ -6,7 +6,7 @@
 include:
   - project: orchestration-ai/ai-pipeline/template-ci
     file: /ci-template.yml
-    ref: v2.0.0
+    ref: v3.0.0
 
 variables:
   APP_TECHNOLOGY: dotnet
@@ -15,10 +15,13 @@ variables:
   DOTNET_TESTS: ""
   # EF_PROJECT / EF_STARTUP_PROJECT: liga as migrations
   HEALTH_PATH: /health
-  # feature/* → verify-code-review (.code-review-ok.json) → MR automática pra dev.
+  # feature/* e hotfix/* → verify-code-review (.code-review-ok.json) → MR automática pra main (ou reabre a mesma, se a Esteira a fechou).
   # Exige GITLAB_TOKEN (project access token, escopo api) nas variáveis do projeto.
   REVIEW_GATE_ENABLED: "true"
-  # Merge da MR na dev fecha a mãe e as filhas da fatia no workspace (template-ci/README.md, "Fechar a fatia").
+  # ESTEIRA_URL (obrigatória para publicar; fail-closed) e EPHEMERAL_HEALTH_PATH: ver template-ci/README.md.
+  #   ESTEIRA_URL: ""
+  #   EPHEMERAL_HEALTH_PATH: /health
+  # Merge da MR na main fecha a mãe e as filhas da fatia no workspace (template-ci/README.md, "Fechar a fatia").
   # GITLAB_TOKEN precisa enxergar todos os projetos abaixo: group access token (api, Developer).
   FECHAR_FATIA_ENABLED: "false"       # "true" depois de preencher as duas linhas abaixo
   WORKSPACE_PROJECT: ""        # ex: grupo/projeto-workspace

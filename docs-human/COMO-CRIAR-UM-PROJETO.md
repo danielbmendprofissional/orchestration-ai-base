@@ -182,8 +182,8 @@ Abra `http://localhost:4200` (nunca direto a porta da API). Reiniciou a infra ou
 
 ```
 UMA VEZ      máquina → projeto (agent) → discovery → fundação (bootstrap + design)
-POR FATIA    /proximo → /fatia B3 → ✋ você aprova a spec → (automático) → ✋ você revisa e mergeia a MR
-DEPOIS       tag → qa → hml → main   (esteira de deploy)
+POR FATIA    /proximo → /fatia B3 → ✋ você aprova a spec → (automático) → ✋ você revisa a MR e aprova na Esteira (ela mergeia)
+DEPOIS       ✋ você abre uma Entrega com as Fatias prontas → qa → hml → produção (flag desligado) → ✋ Liberação   (esteira de deploy)
 ```
 
 ✋ = só você decide. Tudo o mais é automático: tickets, TDD, review, correção de achados, push e MR.
@@ -284,7 +284,7 @@ Feita pelo Claude Code direto das ADRs e dos `padrao-*.md`, **sem spec nem ticke
 2. **Design system**, antes de qualquer spec com tela: `/impeccable init`, tokens em `src/styles.css`, uma página de amostra que **você aprova**.
    Peça: `Faça o design system do <projeto>-frontend. Direção em docs/referencias/visual/. Quero uma página de amostra para aprovar.`
 
-**Pronto quando:** `ng serve`/`dotnet run` sobem, `npm test` roda, o design está aprovado e as branches estão **mergeadas em `dev`**.
+**Pronto quando:** `ng serve`/`dotnet run` sobem, `npm test` roda, o design está aprovado e as branches estão **mergeadas na `main`**.
 Detalhe: [padrão do frontend](../docs/agents/padrao-frontend.md) · [padrão da API](../docs/agents/padrao-api.md) · [infra local](../docs/agents/infra-local.md).
 
 ## Conferir o mapa
@@ -397,9 +397,9 @@ Se, depois do relatório, você **quer um visual novo**, pare no relatório e ro
 1. Suba o front (`npm start`) e abra a página de amostra (ou, no app existente, leia o relatório do `audit`).
 2. Responda: `aprovo`, ou `ajuste: <o que mudar>` (ele corrige e mostra de novo).
 3. **App existente:** cada grupo de achados que você quer corrigir vira linha no mapa: `/mapa` → aprove → `/mapa aplicar`, e cada uma segue a [rotina por fatia](#parte-b-rotina-por-fatia).
-4. Aprovado, mergeie a branch em `dev` e peça: *"marque a fundação D0 como feita no mapa"* (fundação não tem issue, é você quem pede; é isso que deixa a próxima spec partir de uma base que existe).
+4. Aprovado, mergeie a branch na `main` e peça: *"marque a fundação D0 como feita no mapa"* (fundação não tem issue, é você quem pede; é isso que deixa a próxima spec partir de uma base que existe).
 
-**Pronto quando:** `DESIGN.md` e `PRODUCT.md` existem, `src/styles.css` tem os tokens, a amostra foi aprovada e está em `dev`.
+**Pronto quando:** `DESIGN.md` e `PRODUCT.md` existem, `src/styles.css` tem os tokens, a amostra foi aprovada e está na `main`.
 
 **Nas fatias com tela você não faz nada de design:** o agent `ui` lê o `DESIGN.md`, implementa, roda `/impeccable detect` e `audit` contra o localhost e corrige. Na MR ([B5](#b5-revisar-a-mr-e-mergear)) você só confere com `/impeccable critique <url>` ou `audit <url>`.
 
@@ -416,7 +416,7 @@ Mapa: 50 fatias · 7 feitas · 1 em execução · 1 spec aguardando seu ok · 41
 ```
 
 - **sem spec** = a linha existe no mapa, a spec ainda não foi escrita;
-- **livres** = todas as dependências já estão em `dev`: podem receber `/fatia` agora;
+- **livres** = todas as dependências já estão na `main`: podem receber `/fatia` agora;
 - **bloqueadas** = esperam alguma fatia ainda não feita (o `/proximo` diz quais bloqueiam mais, ex.: "B3 libera 4").
 
 Ao terminar a 7ª e digitar `/proximo`, ele atualiza o placar, diz qual é a **próxima livre** e o que você faz (`/fatia B8`). Cada fatia feita **libera** outras, e o número de "livres" sobe e desce.
@@ -451,10 +451,10 @@ Mostra o seu próximo passo, a origem da fatia (linha do mapa, ADR), se alguma A
 
 ## B2 Quando as specs são geradas
 
-**Uma spec por vez, na vez da fatia.** A spec cita o código que a fatia anterior deixou em `dev`; escrita antes, nasce velha. Por isso:
+**Uma spec por vez, na vez da fatia.** A spec cita o código que a fatia anterior deixou na `main`; escrita antes, nasce velha. Por isso:
 
 - o **mapa** nasce inteiro no discovery; as **specs**, não;
-- a spec de uma fatia só é escrita quando todas as dependências dela estão **mergeadas em `dev`** (o `/fatia` confere e para se não estiver);
+- a spec de uma fatia só é escrita quando todas as dependências dela estão **mergeadas na `main`** (o `/fatia` confere e para se não estiver);
 - você dispara com `/fatia B3` (o `/proximo` diz qual é a próxima); nunca gere as specs adiantado;
 - fatias independentes podem ter spec juntas: `/to-spec B1 B2`.
 
@@ -485,7 +485,7 @@ Detalhe: [formato da spec](../docs/agents/spec-format.md).
 
 ## B4 Execução automática
 
-Branch `feature/b3-…` → cada ticket com TDD e um commit → suite completa → `/code-review` → corrige os achados sozinho (até 2 rodadas) → push → MR para `dev` → relatório + notificação. A mãe fica com o label `em-execucao`.
+Branch `feature/b3-…` → cada ticket com TDD e um commit → suite completa → `/code-review` → corrige os achados sozinho (até 2 rodadas) → push → MR para `main` → relatório + notificação. A mãe fica com o label `em-execucao`.
 
 **Acompanhar sem o terminal:** board de issues do workspace por label `em-execucao`; na descrição da mãe, o painel **Execução** (área, modo, **quem executou cada ticket**, suite, review, MR).
 
@@ -507,14 +507,14 @@ O relatório diz o motivo e a decisão que falta. Você resolve e roda de novo (
 No GitLab, MR `B3 — …` do repositório (uma por repositório tocado):
 1. Leia a descrição: tickets, commits, **executores**, suposições, achados não corrigidos.
 2. Teste pelo "Como testar": `git -C <repo> switch feature/b3-…`, suba e percorra os critérios da spec. Com tela: `/impeccable critique|audit <url>`.
-3. **Está bom** → aprove e **mergeie em `dev`** (API antes do frontend).
+3. **Está bom** → **aprove na Esteira** (ela mergeia na `main`; API antes do frontend). **Reprovar:** escreva o motivo na Esteira; ela posta o comentário com o seu nome e fecha a MR; rode `/implement-task` de novo e a mesma MR é reaberta. A Fatia vira **Pronta para Entrega** (ainda não validada em qa nem hml).
    **Não está bom** → [Como corrigir uma fatia](#como-corrigir-uma-fatia).
 
 ## B6 Depois do merge
 
 Nada a fazer. O CI fecha a mãe e os tickets quando o job `fechar-fatia` está ligado; sem ele, o próximo `/fatia`, `/implement-task` ou `/to-spec` fecha. O **Status** do mapa vira `feito` no commit de docs da próxima spec. Rode `/proximo`.
 
-Quando todas as fatias da rodada estiverem em `dev`: tag `vX.Y.Z-rcN` → qa → hml → main. Detalhe: [esteira de deploy](../docs/agents/esteira-deploy.md) · [fluxo de tags](https://github.com/danielbmendprofissional/orchestration-ai-pipeline-template-ci/blob/main/docs/fluxo-de-tags.md).
+Quando houver Fatias Prontas para Entrega que você quer publicar: abra uma **Entrega** na Esteira selecionando-as → Artefato por SHA → qa (DAST ativo) → hml → produção com flag desligado → **Liberação** das Fatias que você escolher. Não há tag `rcN`, branch `dev`/`qa`/`hml` nem merge manual de promoção. Detalhe: [esteira de deploy](../docs/agents/esteira-deploy.md).
 
 ---
 
@@ -558,26 +558,26 @@ Critério **novo** (sem ticket que o cubra): rode antes `/to-tickets B3` e confi
 1. No GitLab, feche a MR sem mergear.
 2. **No seu terminal** (o hook impede o Claude de fazer isto): apague a branch nos repositórios tocados.
    ```powershell
-   git -C <repo> switch dev
+   git -C <repo> switch main
    git -C <repo> branch -D feature/b3-<slug>
    git -C <repo> push origin --delete feature/b3-<slug>
    ```
 3. ```
    /implement-task B3
    ```
-   Sem a branch, nenhum ticket conta como feito: ele refaz tudo a partir de `origin/dev`.
+   Sem a branch, nenhum ticket conta como feito: ele refaz tudo a partir de `origin/main`.
 
 ### Caso 5 Já mergeou e apareceu problema
 Fatia entregue não se reescreve. Duas saídas:
-- **Reverter:** botão *Revert* na MR mergeada no GitLab (abre uma MR de reversão para `dev`).
+- **Reverter:** se ainda não foi publicada, **Excluir** a Fatia na Esteira (a Esteira cria a issue "Limpeza da Fatia B3" e você roda `/fatia` nela; a Fatia de limpeza tem o código `B3-L`). Se o problema é só do Artefato, botão *Revert* na MR mergeada (abre uma MR de reversão para `main`) ou rollback na Esteira. Fatia com flag desligado é inerte; sem flag, a Esteira bloqueia nova Entrega do Projeto até a limpeza entrar.
 - **Corrigir para frente:** adicione ao `specs/README.md` uma linha nova (`B3b — Correção de <problema>`, depende de B3) e rode `/fatia B3b`.
 
 # Spec velha
 
-Spec escrita antes da vez dela envelhece (o código em `dev` mudou). O `/proximo` avisa (`A1: ⚠ desatualizada`) e o `/fatia` faz uma **revalidação**, não uma spec nova: mostra o que mudou, atualiza as referências e pede o seu ok. A checagem é o script `check-spec-drift.mjs`: compara a linha `base:` da spec com o `dev` de agora; spec sem `base:` conta como velha. Ele mede código e ADRs; se **a sua decisão de produto** mudou, é você quem avisa.
+Spec escrita antes da vez dela envelhece (o código na `main` mudou). O `/proximo` avisa (`A1: ⚠ desatualizada`) e o `/fatia` faz uma **revalidação**, não uma spec nova: mostra o que mudou, atualiza as referências e pede o seu ok. A checagem é o script `check-spec-drift.mjs`: compara a linha `base:` da spec com a `main` de agora; spec sem `base:` conta como velha. Ele mede código e ADRs; se **a sua decisão de produto** mudou, é você quem avisa.
 
 ```
-/fatia A1 — refaça a spec sobre o código atual de dev e me mostre o que mudou
+/fatia A1 — refaça a spec sobre o código atual da main e me mostre o que mudou
 ```
 
 # Paralelismo
@@ -608,9 +608,9 @@ Ele (somente leitura; faz `git fetch`) lista, por repositório, a branch atual e
 
 | # | O que é | Quem |
 |---|---|---|
-| 1 | **Commitar / subir:** arquivo alterado e não comitado, commit não enviado, branch nunca enviada, commit local na `dev`/`main` | você |
+| 1 | **Commitar / subir:** arquivo alterado e não comitado, commit não enviado, branch nunca enviada, commit local na `main` | você |
 | 2 | **Mergear** MR aberta, ou **abrir MR** de branch que está no GitLab sem MR | você, no GitLab |
-| 3 | **Alinhar:** `switch` para `dev`/`main` e `pull --ff-only` | seguro |
+| 3 | **Alinhar:** `switch` para `main` e `pull --ff-only` | seguro |
 | 4 | **Limpar:** apagar branch **já mergeada** (`git branch -d`, que recusa se não estiver mergeada) | seguro |
 
 E a última linha: **"Pronto para começar a próxima fatia?"** `SIM` · `QUASE` (só alinhar) · `NÃO` (há pendência sua).
@@ -683,7 +683,7 @@ Detalhe: [processo](../docs/agents/melhoria-orquestracao.md) · [comando](../.cl
 |---|---|
 | Máquina, projeto, infra, skills (A1, A2) | feitos |
 | Discovery e ADRs 0001–0017, `CONTEXT-MAP.md` (A3) | feitos |
-| Fundação (A4): F0 (front), M0 (API), D0 (design) | em `dev` |
+| Fundação (A4): F0 (front), M0 (API), D0 (design) | na `main` |
 | Fatias feitas | B2, B1 |
 | **Em andamento** | **B3** (sessão BFF): spec escrita, aguardando seu ok |
 | Próximas | F0.5 → A1 (spec antiga, será revalidada) → E1 … E5 (specs nascem na vez de cada uma) |
