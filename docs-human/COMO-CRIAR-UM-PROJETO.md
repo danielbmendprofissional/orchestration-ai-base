@@ -648,7 +648,7 @@ Ele (somente leitura; faz `git fetch`) lista, por repositório, a branch atual e
 | 3 | **Alinhar:** `switch` para `main` e `pull --ff-only` | seguro |
 | 4 | **Limpar:** apagar branch **já mergeada** (`git branch -d`, que recusa se não estiver mergeada) | seguro |
 
-E a última linha: **"Pronto para começar a próxima fatia?"** `SIM` · `QUASE` (só alinhar) · `NÃO` (há pendência sua).
+E a primeira linha da resposta é o **veredito em uma frase**: "tudo em dia, pode começar a próxima fatia", "quase pronto: falta só alinhar" ou "ainda não dá: há pendência sua", com o motivo.
 
 **Quando rodar:** depois de mergear uma MR, antes de cada `/fatia`, ou quando não souber o que ficou solto. O `/proximo` avisa quando precisa.
 
