@@ -1,5 +1,7 @@
 # ai-base
 
+> **Perdido?** Digite **`/ajuda`** (todos os comandos, uma linha cada; `/ajuda tudo` inclui as ~90 skills) ou **`/proximo`** (o que fazer agora).
+
 Projeto base pra todo novo workflow assistido por IA — vira o `<projeto>-workspace` de cada projeto (ver `docs/agents/workspace.md`) — stack-agnóstico no backend, Angular fixo no frontend. O que este repo fixa é o **processo**: discovery → spec → tickets → TDD → review → commit → merge request → esteira de deploy.
 
 ## Por onde começar

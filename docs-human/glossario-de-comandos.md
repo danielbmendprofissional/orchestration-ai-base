@@ -1,5 +1,7 @@
 # Glossário de comandos
 
+> **Sem paciência para ler isto?** Digite **`/ajuda`**: a mesma lista de comandos, uma linha cada, sempre atual (`/ajuda tudo` inclui todas as skills).
+
 Tudo que você pode digitar na orquestração, num lugar só. Para o **fluxo** (a ordem das coisas), siga o [`COMO-CRIAR-UM-PROJETO.md`](COMO-CRIAR-UM-PROJETO.md). Aqui é consulta rápida: "qual comando faz o quê, e quando".
 
 Os comandos `/…` rodam dentro do Claude Code, na **raiz do workspace** (ou na área isolada da fatia, quando há painéis em paralelo). Fonte de cada um: `.claude/commands/` (comandos do projeto) e `.claude/skills/` (skills instaladas).
@@ -61,6 +63,7 @@ Variações:
 
 | Comando | Para quê | Quando |
 |---|---|---|
+| `/ajuda` · `/ajuda tudo` | Lista os comandos do projeto (e, com `tudo`, as skills instaladas), uma linha cada, lida dos próprios arquivos (zero token de leitura, nunca fica velha) | Quando esquecer qual comando usar |
 | `/retro` | Retrospectiva: o que falhou vira ajuste no lugar certo (ai-base, agente, ADR) | Depois de cada fatia, nos primeiros projetos |
 | `/triage` | Move issues pelo vocabulário de labels (`docs/agents/triage-labels.md`) | Issues fora do fluxo de fatia |
 | `/improve-codebase-architecture` · `/codebase-design` | Varredura de arquitetura · vocabulário de módulos | A cada N dias ou sprints, não por ticket |
@@ -97,7 +100,7 @@ O modo é escolha de custo; o processo é o mesmo nos três. Trocar de modo = fe
 | `node .claude/scripts/check-spec-drift.mjs --stamp <spec>` | Grava a linha `base:` (sha da `main` de agora) na spec. O `/fatia` faz ao aprovar |
 | `node .claude/scripts/check-escopo.mjs <repo> <base> --allow … --deny …` | Confere o diff de uma task: fora do escopo, teste apagado, `skip`/`only`, **teste novo sem a marca da fatia** (o `/implement-task` já roda) |
 | `node .claude/scripts/status-specs.mjs` | Tabela do status **real** de todas as fatias do mapa (zero token): cruza o `specs/README.md` com a issue-mãe, a MR mergeada na `main` e os testes marcados. Estados: `implementada`, `em execução`, `não iniciada`, `inconsistente` (o mapa e a evidência não batem; o motivo vem na linha). Exit 1 se houver inconsistente. Demora ~10 s por consultar o GitLab; `--sem-gitlab` pula, `--fetch` atualiza o git antes |
-| `node .claude/scripts/status-specs.mjs B2` | Uma linha só, para uma fatia. Com `--pre-entrega`, é o gate que o `/implement-task` roda antes da review: falha se nenhum teste leva a marca da fatia |
+| `node .claude/scripts/status-specs.mjs B2` | Uma linha só, para uma fatia (`B2-L`, a Fatia de limpeza, é tratada à parte: a MR e a branch dela não contam como da `B2`). Com `--pre-entrega`, é o gate que o `/implement-task` roda antes da review: falha se nenhum teste leva a marca da fatia |
 
 **Marca da fatia nos testes:** todo teste novo leva o código da fatia (`B2`, não `B2.5`), e é isso que o `status-specs.mjs` conta. .NET: `[Trait("Fatia", "B2")]` na classe · Vitest: `describe('[B2] Nome', …)` · Playwright: `{ tag: '@B2' }`. Rodar só a fatia: `dotnet test --project <projeto de teste> -- --filter-trait "Fatia=B2"`. Regra completa em `docs/agents/orchestration.md`, "Marca da fatia nos testes".
 | `node infra-config.mjs secrets <projeto> --csproj=<csproj da API>` (em `ai-infra\configs\infra`) | Grava nos user-secrets da API as chaves do contrato `docs/agents/infra-local.md` (Postgres, RabbitMQ, Redis, Keycloak). Rode depois que o `.csproj` existir (precisa de `<UserSecretsId>`) e depois de todo `apply` que troque segredo; reinicie a API. Confira com `dotnet user-secrets list --project <csproj>` |
@@ -107,7 +110,7 @@ O modo é escolha de custo; o processo é o mesmo nos três. Trocar de modo = fe
 
 - **Subagentes** (`.claude/agents/`): `data`, `backend`, `front`, `ui` (executores no modo pago/free), `tests`, `security`, `review`, `qa`. Chamados pelo `/implement-task`.
 - **Hook** `block-dangerous-git.sh`: bloqueia push direto em `main`, `--force`, `reset --hard`, `clean -f`, `branch -D`. Vale para toda sessão e subagente.
-- **CI (template-ci):** `verify-code-review` (confere a prova do review e abre a MR), `fechar-fatia` (fecha mãe e filhas no merge, na `main`, e quando a MR é fechada pela reprovação destrói o preview; quando ligado).
+- **CI (template-ci v3):** `verify-code-review` (confere a prova do review e abre a MR), `fechar-fatia` (fecha mãe e filhas no merge, na `main`, e quando a MR é fechada pela reprovação destrói o preview; quando ligado; aceita a Fatia de limpeza `B2-L`). O controlador de pipeline tem os processos `mr`, `main`, `fluxo`, `promocao`, `liberacao`, `flag`, `rollback`, `rotulo`, `preview`, `preview-destroy` e `limpeza`; **os que publicam só rodam por trigger do bot da Esteira**: disparo manual (push de tag, "Run pipeline") é recusado.
 
 ## 9. Onde olhar no GitLab
 

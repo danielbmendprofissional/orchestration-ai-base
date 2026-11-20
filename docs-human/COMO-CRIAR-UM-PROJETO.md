@@ -2,7 +2,7 @@
 
 Guia curto. Cada seção termina com o link do detalhe. Todos os comandos: [glossário](glossario-de-comandos.md).
 
-> **Perdeu o fio?** Abra o Claude na raiz do workspace e digite **`/proximo`**. Ele diz onde você está, o seu próximo passo e de onde vem cada fatia.
+> **Perdeu o fio?** Abra o Claude na raiz do workspace e digite **`/proximo`**. Ele diz onde você está, o seu próximo passo e de onde vem cada fatia. **Esqueceu os comandos?** Digite **`/ajuda`** (uma linha por comando; `/ajuda tudo` inclui todas as skills).
 
 ## Índice — todos os tópicos
 
@@ -19,16 +19,17 @@ Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-co
 | [Parte A — Montar o projeto](#parte-a--montar-o-projeto-uma-vez) | Visão da montagem inicial |
 | [A1 Máquina](#a1-máquina) | Preparar a máquina (ferramentas, infra, modos do Claude) |
 | [A2 Projeto novo ou existente](#a2-projeto-novo-ou-existente) | Criar o projeto ou trazer um que já existe |
+| [Configurar o GitLab de cada repositório](#configurar-o-gitlab-de-cada-repositório-de-código-você-uma-vez) | `main` protegida, merge sem squash, bot, `ref: v3.0.0`, `ESTEIRA_FALLBACK` |
 | [A3 Discovery e decisões](#a3-discovery-e-decisões) | O que o discovery gera e o que não gera |
 | [A4 Fundação bootstrap e design](#a4-fundação-bootstrap-e-design) | As fatias de fundação, que não têm spec nem tickets |
 | [Conferir o mapa](#conferir-o-mapa) | Conferir se o mapa de fatias está completo |
 | **Design** | |
 | [Design](#design) | Começar o design (app do zero ou já existente): referências, prompt e aprovação, com `/design-init` |
-| [D1 Reunir as referências (discovery visual)](#d1-reunir-as-referências-discovery-visual) | Juntar as referências visuais |
-| [D2 Pedir o design (o prompt)](#d2-pedir-o-design-o-prompt) | O prompt do design |
+| [Passo 1 do design: reunir as referências](#passo-1-do-design-reunir-as-referências-discovery-visual) | Juntar as referências visuais |
+| [Passo 2 do design: pedir o design (o prompt)](#passo-2-do-design-pedir-o-design-o-prompt) | O prompt do design |
 | [App do zero](#app-do-zero) | Pedido de design para app novo |
 | [App que já existe](#app-que-já-existe) | Pedido de design para app existente |
-| [D3 Aprovar e seguir](#d3-aprovar-e-seguir) | Aprovar o design e continuar |
+| [Passo 3 do design: aprovar e seguir](#passo-3-do-design-aprovar-e-seguir) | Aprovar o design e continuar |
 | **Fluxo** | |
 | [Como o fluxo anda](#como-o-fluxo-anda) | Quantas fatias faltam e em que ponto cada uma está |
 | **Parte B — Rotina por fatia** | |
@@ -182,7 +183,7 @@ Abra `http://localhost:4200` (nunca direto a porta da API). Reiniciou a infra ou
 
 ```
 UMA VEZ      máquina → projeto (agent) → discovery → fundação (bootstrap + design)
-POR FATIA    /proximo → /fatia B3 → ✋ você aprova a spec → (automático) → ✋ você revisa a MR e aprova na Esteira (ela mergeia)
+POR FATIA    /proximo → /fatia B3 → ✋ você aprova a spec → (automático) → ✋ você revisa a MR e aprova (na Esteira, que mergeia; sem ela, você mergeia no GitLab)
 DEPOIS       ✋ você abre uma Entrega com as Fatias prontas → qa → hml → produção (flag desligado) → ✋ Liberação   (esteira de deploy)
 ```
 
@@ -242,6 +243,22 @@ O agent mostra o plano e, com o seu ok, faz tudo isto:
 **Pronto quando:** `relatorio-ambiente.md` sem pendência e os três repositórios com o primeiro push.
 Detalhe: [agent](https://github.com/danielbmendprofissional/orchestration-ai-ops/blob/main/agents/infra/local-environment-config/CLAUDE.md), Etapa 2 · [recriar projeto existente](https://github.com/danielbmendprofissional/orchestration-ai-ops/blob/main/agents/infra/local-environment-config/docs/enviroment/recriar-projeto.md).
 
+### Configurar o GitLab de cada repositório de código (você, uma vez)
+
+O modelo é trunk-based: só `main`, `feature/*` e `hotfix/*`. Em `<projeto>-api` e `<projeto>-frontend`:
+
+| Configuração | Valor |
+|---|---|
+| Branch padrão | `main`, **protegida** |
+| Quem faz merge na `main` | só o **bot da Esteira** (usuário de serviço do grupo, token com escopo `api`). **Enquanto a Esteira não existe** (e sempre, em `esteira-api`/`esteira-frontend`): Maintainer, no GitLab |
+| Método de merge | **merge commit, sem squash** (o `status-specs` e o `fechar-fatia` dependem disso) |
+| Regras da MR | "Pipeline must succeed" e "todas as threads resolvidas" |
+| Tags | protegidas; só o bot cria (versão `X.Y.Z`, sem "v") |
+| `.gitlab-ci.yml` | copiado de `templates/` do `ai-base`, com `ref: v3.0.0` do `template-ci` (sempre uma tag, nunca `main`) |
+| Variáveis do projeto | `GITLAB_TOKEN` (project/group access token, escopo `api`); `ESTEIRA_URL` quando a Esteira existir; **`ESTEIRA_FALLBACK=true`** nos repositórios da própria Esteira ou de um projeto sem Esteira ainda (pipeline roda sem chamar a Esteira) |
+
+Não existem `dev`, `qa` nem `hml`: ambiente não é branch. Detalhe: [esteira de deploy](../docs/agents/esteira-deploy.md) · [template-ci](https://github.com/danielbmendprofissional/orchestration-ai-pipeline-template-ci).
+
 ## A3 Discovery e decisões
 
 Na **raiz do workspace** (daqui em diante é sempre lá):
@@ -273,7 +290,7 @@ Ele entrevista, uma pergunta por vez. "Não sei, recomende" é resposta válida.
 
 Trabalho grande demais para uma sessão: `/wayfinder` antes. Em dúvida de qual skill usar: `/ask-matt`.
 
-**Pronto quando:** não sobra pergunta aberta, o mapa existe **e o `/mapa` não aponta item sem fatia** (próxima seção).
+**Pronto quando:** não sobra pergunta aberta, o mapa existe **e o `/mapa` não aponta item sem fatia** (próxima seção). Mudou o modelo de processo depois? Rode o `/mapa` de novo.
 
 ## A4 Fundação bootstrap e design
 
@@ -289,7 +306,7 @@ Detalhe: [padrão do frontend](../docs/agents/padrao-frontend.md) · [padrão da
 
 ## Conferir o mapa
 
-O mapa envelhece: protótipo, ADR e `docs/mudancas-*.md` aparecem depois do discovery, e nada garante que viraram fatia. **Rode no fim do discovery, e de novo sempre que o `/proximo` avisar** ("ADR/protótipo/mudança alterados depois do último ajuste do mapa").
+O mapa envelhece: protótipo, ADR e `docs/mudancas-*.md` aparecem depois do discovery, e nada garante que viraram fatia. **Rode no fim do discovery, e de novo sempre que o `/proximo` avisar** ("ADR/protótipo/mudança alterados depois do último ajuste do mapa") **e sempre que o modelo de processo mudar** (foi assim que a mudança para trunk-based revelou fatias novas, como o painel de Fatias e a Liberação, que o mapa antigo não tinha).
 
 ```
 /mapa
@@ -327,10 +344,12 @@ O `/mapa` nunca altera nada sozinho; `aplicar` só depois do seu ok, e a mudanç
 As ferramentas já vêm instaladas pelo agent da [A2](#a2-projeto-novo-ou-existente); você não instala nada. As seções abaixo explicam cada etapa e trazem os prompts, para você entender o que o comando faz ou para fazer à mão.
 
 ```
-D1 reunir referências  →  D2 pedir o design (prompt)  →  D3 aprovar a amostra  →  fatias com tela
+passo 1 reunir referências  →  passo 2 pedir o design (prompt)  →  passo 3 aprovar a amostra  →  fatias com tela
 ```
 
-## D1 Reunir as referências (discovery visual)
+> Os passos do design **não** têm código tipo `D1`: `D0`, `D1`… são **fatias do mapa** (por exemplo, a `D1` da Esteira é o design do modelo novo).
+
+## Passo 1 do design: reunir as referências (discovery visual)
 
 Referência é **o que você quer que ele imite**. Sem ela, o Claude chuta um estilo (e cai no "cara de IA"). Faça antes de pedir o design.
 
@@ -354,7 +373,7 @@ Registrar a decisão no README de docs/referencias/visual/.
 
 **Pronto quando:** `docs/referencias/visual/README.md` tem a direção e o que observar em cada print, e você não tem mais dúvida de "como deve parecer".
 
-## D2 Pedir o design (o prompt)
+## Passo 2 do design: pedir o design (o prompt)
 
 O `/design-init` monta e envia este prompt por você, com os caminhos reais. À mão: abra o Claude **na raiz do workspace** (`claude`) e mande o prompt do seu caso. O Claude lê as referências, gera a direção, roda `/impeccable init` (que cria `DESIGN.md` e `PRODUCT.md`: **esses dois passam a ser a fonte de verdade do design**), mapeia os tokens para `src/styles.css` e monta uma **página de amostra**. Ele mostra o plano antes de mexer.
 
@@ -371,7 +390,7 @@ depois /impeccable init para gerar DESIGN.md e PRODUCT.md, usando tokens.md como
 Mapeie os tokens para src/styles.css (@theme do Tailwind e as variáveis do spartan no :root). Nada de tema de fábrica
 do spartan intocado, fonte ou cor "default" sem decisão.
 
-Perfil: <dashboard/app corporativo denso | outro>. Tom: <o que você decidiu no D1>.
+Perfil: <dashboard/app corporativo denso | outro>. Tom: <o que você decidiu no passo 1>.
 Entregue uma página de amostra (cores, tipografia, espaçamento, botões, formulário, tabela, badges de status, estados vazio/erro/carregando) para eu aprovar.
 Mostre o plano antes de começar. Trabalhe numa branch e não faça merge.
 ```
@@ -392,7 +411,7 @@ Mostre o plano antes de começar.
 
 Se, depois do relatório, você **quer um visual novo**, pare no relatório e rode o prompt de "App do zero" apontando as referências novas.
 
-## D3 Aprovar e seguir
+## Passo 3 do design: aprovar e seguir
 
 1. Suba o front (`npm start`) e abra a página de amostra (ou, no app existente, leia o relatório do `audit`).
 2. Responda: `aprovo`, ou `ajuste: <o que mudar>` (ele corrige e mostra de novo).
@@ -508,13 +527,29 @@ No GitLab, MR `B3 — …` do repositório (uma por repositório tocado):
 1. Leia a descrição: tickets, commits, **executores**, suposições, achados não corrigidos.
 2. Teste pelo "Como testar": `git -C <repo> switch feature/b3-…`, suba e percorra os critérios da spec. Com tela: `/impeccable critique|audit <url>`.
 3. **Está bom** → **aprove na Esteira** (ela mergeia na `main`; API antes do frontend). **Reprovar:** escreva o motivo na Esteira; ela posta o comentário com o seu nome e fecha a MR; rode `/implement-task` de novo e a mesma MR é reaberta. A Fatia vira **Pronta para Entrega** (ainda não validada em qa nem hml).
+   - **Sem a Esteira** (projeto novo antes dela existir, ou `esteira-api`/`esteira-frontend`, que ficam fora do esquema): aprove e **mergeie no GitLab** (merge commit, sem squash, API antes do frontend), com o repositório em `ESTEIRA_FALLBACK=true`. Reprovar = comentar e fechar a MR; o `/implement-task` reabre a mesma.
+   - **Review com tela:** na Esteira, o botão **Abrir review** sobe um preview estático (sessão e dados falsos, sem API nem banco; some em 7 dias ou ao fechar a MR). App real só para Fatia `risco: alto`.
    **Não está bom** → [Como corrigir uma fatia](#como-corrigir-uma-fatia).
 
 ## B6 Depois do merge
 
 Nada a fazer. O CI fecha a mãe e os tickets quando o job `fechar-fatia` está ligado; sem ele, o próximo `/fatia`, `/implement-task` ou `/to-spec` fecha. O **Status** do mapa vira `feito` no commit de docs da próxima spec. Rode `/proximo`.
 
-Quando houver Fatias Prontas para Entrega que você quer publicar: abra uma **Entrega** na Esteira selecionando-as → Artefato por SHA → qa (DAST ativo) → hml → produção com flag desligado → **Liberação** das Fatias que você escolher. Não há tag `rcN`, branch `dev`/`qa`/`hml` nem merge manual de promoção. Detalhe: [esteira de deploy](../docs/agents/esteira-deploy.md).
+Quando houver Fatias Prontas para Entrega que você quer publicar: abra uma **Entrega** na Esteira selecionando-as → Artefato por SHA → qa (DAST ativo) → hml (DAST passivo) → produção com flag desligado → **Liberação** das Fatias que você escolher. Não há tag `rcN`, branch `dev`/`qa`/`hml` nem merge manual de promoção. Detalhe: [esteira de deploy](../docs/agents/esteira-deploy.md).
+
+**O Painel de Fatias** (na Esteira) mostra onde cada Fatia está, em abas:
+
+| Aba | O que tem |
+|---|---|
+| Em andamento | spec, execução ou MR ainda aberta |
+| Prontas para Entrega | MR mergeada na `main`, ainda não publicada |
+| Em Entrega | dentro de uma Entrega em qa, hml ou produção |
+| Aguardando liberação | em produção com flag desligado: você **libera** ou **exclui** |
+| Liberadas | flag ligado (ou Fatia sem flag, que vira Liberada ao chegar a produção) |
+
+- **Liberação:** liga o flag `Features:<Fatia>` (flag ausente = desligado); só a Esteira liga e desliga, aplicar = reiniciar o pod. Depois roda smoke só de leitura e ZAP passivo.
+- **Fatia sem flag** (`flag: não` na spec: correção, refatoração, infra): já vem selecionada e travada na Entrega e nasce Liberada em produção.
+- **Excluir** uma Fatia com flag deixa o código inerte e cria a **Fatia de limpeza** `<código>-L` (ex.: `B3-L`), e a Esteira lembra da dívida a cada 30 dias; sem flag, o excluir bloqueia nova Entrega do Projeto até a limpeza ser mergeada (hotfix continua permitido).
 
 ---
 
@@ -677,15 +712,18 @@ Detalhe: [processo](../docs/agents/melhoria-orquestracao.md) · [comando](../.cl
 
 **Nomes:** o código da fatia liga tudo. Mãe `B3 — título` · tickets `B3.1 — …` · branch `feature/b3-<slug>` · commit `… (B3.1 · workspace#9)` · MR `B3 — título`. Você nunca precisa do número da issue.
 
+**Fatia de limpeza:** `B3-L` (mãe `B3-L — …`, tickets `B3-L.1`, branch `feature/b3-l-<slug>`). O **título** da MR decide a Fatia (a branch `feature/b3-l-…` não conta como `B3`). Evite ponto no código da Fatia (`F0.5`): não vale para preview nem para `fechar-fatia`. **Na spec**, a linha `flag: sim|não` diz se a Fatia entra atrás de `Features:<Fatia>`; `preview:` diz módulo e rota de entrada quando toca o front ([formato da spec](../docs/agents/spec-format.md)).
+
 # Estado da Esteira
 
 | Parte | Estado |
 |---|---|
 | Máquina, projeto, infra, skills (A1, A2) | feitos |
-| Discovery e ADRs 0001–0017, `CONTEXT-MAP.md` (A3) | feitos |
+| Discovery e ADRs 0001–0025 (modelo trunk-based), `CONTEXT-MAP.md` (A3) | feitos |
 | Fundação (A4): F0 (front), M0 (API), D0 (design) | na `main` |
 | Fatias feitas | B2, B1 |
-| **Em andamento** | **B3** (sessão BFF): spec escrita, aguardando seu ok |
-| Próximas | F0.5 → A1 (spec antiga, será revalidada) → E1 … E5 (specs nascem na vez de cada uma) |
+| Pendentes do mapa | B3 (sessão BFF) e F0.5 |
+| Próximas, na ordem | A1 → D1 (design do modelo novo) → P1 → P2 → E1 … E8 → X1, X2, O1 (specs nascem na vez de cada uma) |
+| `esteira-api` e `esteira-frontend` | já na `main`; ficam **fora** do esquema de Entrega (merge manual, `ESTEIRA_FALLBACK=true`) |
 
 Para o estado de agora, não use esta tabela: rode `/proximo`.
