@@ -75,6 +75,8 @@ Sempre que for trabalhar, nesta ordem. **Todos os comandos no PowerShell.** Exem
 | 9 | **Frontend** | `cd ...\esteira\esteira-frontend` e `npm start` | `http://localhost:4200` abre |
 | 10 | **GitLab** | abas abaixo | você vê issues e MRs |
 
+**Atalho dos passos 2, 5, 8 e 9:** ao abrir a pasta do workspace no VS Code (passo 4), abrem e **rodam sozinhos** 6 terminais nomeados: **Infra**, **Claude**, **Claude pago**, **Claude free**, **API** e **Frontend**. O Infra só sobe o que não estiver no ar (confere antes; se já está tudo saudável, só roda o `verify`); a API e os modos pago/free esperam a infra e o OmniRoute. O Docker Desktop (passo 1) continua por sua conta. Vêm de `.vscode/tasks.json` + `.claude/scripts/dev.ps1`. Num projeto novo ou existente, quem grava isso é o **agent da Etapa 2** (A2): ele pergunta se o projeto é só front, só API ou os dois, confirma os caminhos e pede o seu **"sim"**, porque passa a ligar coisas sozinho toda vez que a pasta abre. Na primeira vez o VS Code pergunta "Allow Automatic Tasks": **Allow**. Fechou um terminal? `Terminal > Run Task`. Para desligar, apague a task do `tasks.json`.
+
 Os passos 8 e 9 só se for testar no navegador. Precisa de login? Veja [Acessos e senhas](#acessos-e-senhas-de-desenvolvimento).
 
 **URLs para ver o estado (infra e app):**
