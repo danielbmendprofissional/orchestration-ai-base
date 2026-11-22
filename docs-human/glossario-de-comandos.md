@@ -65,6 +65,7 @@ Variações:
 |---|---|---|
 | `/ajuda` · `/ajuda tudo` | Lista os comandos do projeto (e, com `tudo`, as skills instaladas), uma linha cada, lida dos próprios arquivos (zero token de leitura, nunca fica velha) | Quando esquecer qual comando usar |
 | `/gasto` | Tabela de tokens da sessão e de cada subagente (contexto médio/máximo, cache lido, saída), lida dos transcritos do Claude Code, zero token. Avisa se a sessão principal ou uma ticket está com contexto grande demais | Depois de uma fatia, ou quando o limite da sessão acabar rápido demais |
+| `/limpar` | Lista todas as sessões do Claude Code da máquina (ID, projeto, data, tamanho) e apaga de verdade as que você escolher, só depois de mostrar o plano e receber o seu sim. Grava antes o resumo do `/gasto` em `~/.claude/gasto-resumos/`. Atenção: sessão antiga em disco **não gasta token**; apagar libera espaço e privacidade | Para limpar a máquina. Para gastar menos, abra sessão nova em vez de continuar uma enorme |
 | `/retro` | Retrospectiva: o que falhou vira ajuste no lugar certo (ai-base, agente, ADR) | Depois de cada fatia, nos primeiros projetos |
 | `/triage` | Move issues pelo vocabulário de labels (`docs/agents/triage-labels.md`) | Issues fora do fluxo de fatia |
 | `/improve-codebase-architecture` · `/codebase-design` | Varredura de arquitetura · vocabulário de módulos | A cada N dias ou sprints, não por ticket |
