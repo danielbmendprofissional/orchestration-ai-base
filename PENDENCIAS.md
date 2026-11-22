@@ -1,5 +1,19 @@
 # Pendências do ai-base
 
-Nenhuma aberta.
+Velocidade do `/fatia` e do `/implement-task` (análise da A1 da Esteira em 2026-11-21: 9 tickets, ~44 min só para as 4 primeiras; o tempo é quase todo geração do modelo, não build nem teste). Quem resolve: sessão no `ai-base`, depois copiar para a Esteira.
+
+- [x] **Paralelizar tickets de repositórios diferentes** (feito em 2026-11-21, ainda não validado ao vivo): `/implement-task`, passo 1, "Em paralelo": no máximo 2 executores, só com repositórios diferentes, sem `Blocked by` entre eles e sem depender de contrato ainda não comitado; commit e painel um por vez. Ganho esperado 20–30% em fatia back + front.
+- [x] **Limitar o tamanho da ticket** (feito em 2026-11-21): `check-tickets.mjs` falha com mais de 6 critérios por filha (`--max=N`), regra "uma camada por ticket" em `issue-tracker.md` e no `/fatia`. Testado na A1: pegou a A1.4 (7 critérios).
+- [x] **Revalidação de spec sem reescrever o arquivo inteiro** (feito em 2026-11-21, ainda não validado ao vivo): `check-spec-drift.mjs` estima a base pela data do último commit da spec quando não há `base:` e lista o que mudou; `spec-format.md` e `/fatia` mandam editar só esses pontos com `Edit`.
+- [x] **Medir tokens por ticket sem gastar token** (feito em 2026-11-21): `/gasto` (`.claude/scripts/gasto.mjs`) lê os transcritos; o relatório do `/implement-task` traz a linha `Gasto:`. Falta só, se quiser, gravar o gasto de cada ticket no painel da mãe.
+- [ ] **Raciocínio estendido nos subagentes `data`/`backend` em ticket mecânica**: 35–55% dos tokens de saída são raciocínio escondido. Testar antes de mudar (pode custar qualidade); só decidir com medição.
+
+Gasto de tokens (mesma análise; implementado em 2026-11-21 no `ai-base` e copiado para a Esteira, **ainda não validado numa fatia real**):
+
+- [x] **Sessão principal enxuta:** `/fatia` para depois dos tickets e manda `/clear` + `/implement-task`; o `/implement-task` lê da spec só cabeçalho e Ideia e avisa quando o contexto da sessão passa de ~150 mil.
+- [x] **Recorte da spec por ticket:** `ticket-contexto.mjs` (zero token, texto literal). Na spec da A1 o recorte fica em ~77% do tamanho (a spec só tem 15 KB), então o ganho por ticket é pequeno; vale mais em spec grande.
+- [x] **Cota do plano:** documentado em `orchestration.md` que a execução inteira roda nos terminais Claude pago/free, com a ressalva da janela de 200 mil e da qualidade ainda não medida.
+- [ ] **Validar ao vivo na próxima fatia da Esteira:** tickets de back e front rodando em paralelo (e o painel sem corrida); revalidação de spec só por `Edit`; `/fatia` parando para o `/clear`; `/implement-task` retomando só pelo painel e pelo git; executor lendo o recorte e dizendo o que faltou; `check-tickets` com o teto; `/gasto` antes e depois para comparar com a A1 (contexto médio da sessão principal 207 mil, executores 80–155 mil).
+- [ ] **Executar uma ticket mecânica em `claude-free`** e comparar tentativas, tempo e `/gasto` com o pago, antes de recomendar o free para `data`/`backend`.
 
 Última resolvida (2026-10-23): troca do PrimeNG (deixou de ser MIT na versão 22) por **spartan/ui** + Tailwind 4 como default de componentes Angular, seguindo a decisão da Esteira (`ai-pipeline/esteira/docs/adr/0015-spartan-ui-no-lugar-do-primeng.md`). A regra de conferir licença por versão ficou em `docs/design/component-library.md`.
