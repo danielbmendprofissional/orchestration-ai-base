@@ -52,6 +52,7 @@ Clique para ir direto. Fora deste guia: [glossário de comandos](glossario-de-co
 | [Spec velha](#spec-velha) | A spec ficou desatualizada |
 | [Paralelismo](#paralelismo) | Rodar várias fatias ao mesmo tempo |
 | [Situação do git](#situação-do-git) | Branch de cada repositório e o que commitar, mergear ou apagar (`/situacao`) |
+| [Apagar, limpar ou recriar a casa de um projeto](#apagar-limpar-ou-recriar-a-casa-de-um-projeto-etapa-3) | Zerar o banco, apagar só um serviço, remover tudo ou refazer do zero (Etapa 3 do agent, `reset` da infra) |
 | [Melhorias na orquestração](#melhorias-na-orquestração) | Um agent sugeriu melhorar a infra, o template ou o processo |
 | [Onde fica cada coisa](#onde-fica-cada-coisa) | Glossário (`CONTEXT`) e os outros arquivos |
 | [Estado da Esteira](#estado-da-esteira) | Situação atual da Esteira |
@@ -664,6 +665,48 @@ Sem o Claude, o script roda sozinho no PowerShell, da raiz do workspace:
 node .claude/scripts/situacao.mjs            # tudo
 node .claude/scripts/situacao.mjs --sem-mr   # sem consultar o GitLab (mais rápido)
 ```
+
+---
+
+# Apagar, limpar ou recriar a casa de um projeto (Etapa 3)
+
+A casa do projeto na infra compartilhada (banco e roles, prefixo Redis, vhost e usuário do RabbitMQ, realm do Keycloak) nasce **pelo manifesto**: `node infra-config.mjs apply` (a Etapa 2 do agent roda isso por você, [A2](#a2-projeto-novo-ou-existente)). O caminho de volta é o mesmo script, comando `reset`. **Nunca** `DROP`, `docker exec` ou `redis-cli FLUSH` na mão.
+
+**Quem faz: o mesmo agent, Etapa 3.** Abra o Claude na pasta dele e diga o que quer, com as suas palavras:
+
+```powershell
+cd ai-ops\agents\infra\local-environment-config
+claude
+```
+```
+Etapa 3, projeto <projeto>: quero apagar só o conteúdo do banco.
+```
+
+| Você diz | Escopo | O que acontece |
+|---|---|---|
+| "apaga só o conteúdo do banco" | `dados` + `postgres` | o banco é apagado e recriado vazio (grants e muros refeitos); roles e segredos ficam |
+| "apaga o banco e as roles dele" | `recursos` + `postgres` | some o banco e as roles; o manifesto fica |
+| "limpa as filas" / "zera o cache" / "apaga os usuários do realm" | `dados` + `rabbitmq` / `redis` / `keycloak` | esvazia o conteúdo, a estrutura fica |
+| "apaga tudo" | `tudo` | apaga a casa **e** os segredos do projeto no `.env`; o próximo `apply` gera segredos **novos** |
+| "apaga tudo e recria" | `recriar` | apaga e recria vazia, com os **mesmos** segredos (o app não precisa recarregar o user-secrets) |
+
+**O que o agent faz, e onde você decide:**
+1. **Simula** (`reset` sem `--confirmar`) e mostra exatamente o que seria apagado: banco e tamanho, roles, chaves Redis, mensagens, usuários.
+2. ✋ **Pergunta se você quer backup** do banco (`pg_dump` em `ai-infra\container\backups\`, fora do git). Sempre pergunta; o script recusa executar sem a sua resposta. Só o Postgres tem backup: Redis, RabbitMQ e Keycloak são apagados sem cópia.
+3. ✋ Pede a sua **confirmação nominal** do plano e só então executa.
+4. Confere (`verify --projeto`) e diz como voltar.
+
+**Você faz:** decidir o escopo, o backup e a confirmação; **restaurar um dump** (o agent nunca restaura, só entrega o comando); tirar o projeto do manifesto de vez (editar `projects.json` + `apply`). Containers e volumes de um compose **próprio** do projeto não são do `reset`: o agent os lista como "candidato a remover" e pede confirmação item a item.
+
+**Direto no terminal**, sem o agent (em `ai-infra\configs\infra`):
+
+```powershell
+node infra-config.mjs reset <projeto> --escopo=dados --servico=postgres      # simulação
+node infra-config.mjs reset <projeto> --escopo=dados --servico=postgres --confirmar=<projeto> --backup=sim
+```
+
+Voltar depois de `recursos` ou `tudo`: `node infra-config.mjs apply`; com `tudo`, rode também `secrets <projeto> --csproj=<caminho>` e reinicie a API.
+Detalhe: [procedimento do agent](https://github.com/danielbmendprofissional/orchestration-ai-ops/blob/main/agents/infra/local-environment-config/docs/enviroment/limpar-projeto.md) · README do `ai-infra/configs/infra` (seção "Apagar dados ou recursos de um projeto").
 
 ---
 
