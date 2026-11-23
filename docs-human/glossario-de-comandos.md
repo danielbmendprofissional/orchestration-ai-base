@@ -22,6 +22,7 @@ Variações:
 /proximo B3                      # ficha completa de uma fatia
 /fatia                           # a próxima fatia livre do mapa
 /fatia B3 — <instrução>          # contexto seu que não está em nenhum documento
+/fatia B3 — modo pago            # pula a pergunta de modo (claude, pago ou free); sem isso o /fatia pergunta
 /implement-task B3.5             # só uma filha
 /implement-task B3 — <decisão>   # retoma depois de PAROU, com a sua decisão
 /implement-task                  # a próxima fatia livre (o que cada painel paralelo roda)
